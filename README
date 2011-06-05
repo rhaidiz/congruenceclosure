@@ -1,0 +1,5 @@
+Per eseguire il progetto da riga di comando  sufficiente eseguire:
+$java -jar cc.jar [-h] <file | formula>
+
+Per eseguire l'interfaccia grafica eseguire sempre da riga di comando:
+$java -jar cc.jar -gui
