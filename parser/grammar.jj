@@ -1,0 +1,203 @@
+options{  STATIC = false;}
+
+PARSER_BEGIN(Parser)
+
+package parser;
+
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.regex.*;
+import java.util.*;
+import bean.Node;import verifica.Config;
+
+public class Parser {
+
+	private static HashMap Graph;
+    private static ArrayList equals;
+    private static ArrayList noEquals;
+    private static ArrayList cons;
+    private static ArrayList atoms;
+    private static ArrayList consfn;    private static int inc=1;     private static int gg=1;     private static HashMap checkArity = new HashMap();     private static HashSet nonatom = new HashSet();
+	
+
+    public Parser(String input, HashMap G, ArrayList E, ArrayList NE, ArrayList cc, ArrayList atoms, ArrayList consfn) throws ParseException    {
+      this.Graph = G;
+      this.equals = E;
+      this.noEquals = NE;
+      this.cons = cc;
+      this.atoms = atoms;
+      this.consfn = consfn;      this.gg = 1;      this.inc = 1;      this.checkArity = new HashMap();      this.nonatom = new HashSet();      //System.out.println("-..");      if( input.charAt(input.length()-1) == ';')        input = input.substring(0,input.length()-1);              //System.out.println("-"+input);      /* Misuro tempo parser */      long tempo = 0;      int nTest = Config.nTest;      long inizio = System.currentTimeMillis();
+      new Parser(new java.io.StringReader(input)).S();      long fine = System.currentTimeMillis();      tempo += (fine - inizio);        double tCorrS = (double) tempo / nTest;      /* reset delle strutture dati di supporto */      this.gg = 1;      this.inc = 1;      this.checkArity = new HashMap();      this.nonatom = new HashSet();    }
+
+    public static void main(String[] args) throws Exception {
+		Graph = new HashMap();
+		equals = new ArrayList();
+		noEquals = new ArrayList();
+		try{
+			new Parser(new java.io.StringReader(args[0])).S();
+		}catch(	Throwable e) {
+			System.out.println("Syntax check failed: " + e);
+		}
+  }
+}
+
+PARSER_END(Parser)
+
+SKIP:  { " " | "\t" | "\n" | "\r"								}
+TOKEN: { "=" |  "(" | ")" | "&"								| "cons"								| "car"								| "cdr"								| "!="								| "atom"								| ","								| <ALPHA: ((["a"-"z"])+(["0"-"9"])*)>								| <FUN: ((["A"-"Z"])(["a"-"z"])*(["0"-"9"])*) >								 }
+
+void S() throws ParseException, TokenMgrError: {}
+{
+	F() <EOF>
+}
+
+void F() throws ParseException, TokenMgrError: {}
+{
+	C() ( "&" C())*
+}
+
+void C() throws ParseException, TokenMgrError: {
+  Node L;
+  Node R;
+  Token swi;
+  }
+ {
+	L=T() (swi="=" | swi="!=") R=T()
+	{
+	  if(swi.image.equals("="))	  {
+	    equals.add(L.getId());
+	    equals.add(R.getId());	  }else	  {
+	    noEquals.add(L.getId());
+        noEquals.add(R.getId());        L.addForbidden(R.getId());        R.addForbidden(L.getId());	  }	}
+    | "atom" "(" L=T() ")"
+    {
+      atoms.add(L.getId());    }    | "-" "atom" "(" L=T() ")"    {            if(!nonatom.contains("-atom("+L.getId()+")"))      {        //System.out.println("-atom("+L.getId()+")");        nonatom.add("-atom("+L.getId()+")");        String consKey = "cons(f_"+inc+","+"ff_"+inc+")";        /* lo metto nella lista dei cons da controllare */        consfn.add(consKey);        ArrayList argCons = new ArrayList();        ArrayList args = new ArrayList();        /* Aggiungo gli argomenti dei cons */        argCons.add("f_"+inc);        argCons.add("ff_"+inc);        Node tt;        Graph.put("f_"+inc,tt = new Node("f_"+inc));        tt.appendParent(consKey);        Graph.put("ff_"+inc,tt = new Node("ff_"+inc));        tt.appendParent(consKey);                Node tmp;        Graph.put(consKey,tmp = new Node(consKey,"cons",argCons));        tmp.appendParent("car("+consKey+")");        tmp.appendParent("cdr("+consKey+")");                args.add(consKey);                Graph.put("car("+consKey+")", new Node("car("+consKey+")","car",args));        Graph.put("cdr("+consKey+")", new Node("cdr("+consKey+")","cdr",args));                cons.add("car("+consKey+")");        cons.add("f_"+inc);        cons.add("cdr("+consKey+")");        cons.add("ff_"+inc);        //System.out.println("--"+inc);        equals.add(L.getId());        equals.add(consKey);        inc++;              }          } 
+ 
+}
+
+
+Node T() throws ParseException, TokenMgrError: {
+  Node tmp;
+  Token a;
+  Token fun;
+  Node v;
+  Node u;
+  int argsl=0;
+  ArrayList argFun=new ArrayList();
+  String myKey;
+  String myArgs="";
+   }
+{
+	"cons" "(" v=T() "," u=T() ")" 
+	{
+		myKey = "cons("+v.getId()+","+u.getId()+")";
+		// Aggiungo il mio identificatore nella lista dei padri dei miei due figli
+		v.appendParent(myKey);
+		u.appendParent(myKey);
+		// Aggiungo questo cons nella lista dei cons da controllare per soddisfacibilità
+		consfn.add(myKey);
+		// Adesso devo aggiungere questo nodo nel grafo (prima controllo se già esiste)
+		if(Graph.containsKey(myKey))
+			tmp = (Node)Graph.get(myKey);
+		else{
+			ArrayList argCons = new ArrayList();
+			ArrayList args = new ArrayList();
+
+            /* Aggiungo il nodo cons nel grafo con i suoi argomenti */
+			argCons.add(v.getId());
+			argCons.add(u.getId());
+			Graph.put(myKey,tmp = new Node(myKey,"cons",argCons));
+			/* Aggiungo nella mia lista i due padri car e cdr */
+			tmp.appendParent("car("+myKey+")");
+			tmp.appendParent("cdr("+myKey+")");
+            /* Aggiungo i nodi di car e cdr associato al nodo cons */
+			args.add(myKey);
+			Graph.put("car("+myKey+")", new Node("car("+myKey+")","car",args));
+			Graph.put("cdr("+myKey+")", new Node("cdr("+myKey+")","cdr",args));
+
+			/* Aggiungo nella lista dei cons i nodi che dovranno essere "mergati" */
+			cons.add("car("+myKey+")");
+			cons.add(v.getId());
+			cons.add("cdr("+myKey+")");
+            cons.add(u.getId());
+		}
+		return tmp;
+	}
+	| 
+	"car" "(" v=T() ")"
+	{
+		myKey = "car("+v.getId()+")";
+		// Aggiungo il mio identificatore nella lista dei padri dei miei due figli
+		v.appendParent(myKey);
+		
+		// Adesso devo aggiungere questo nodo nel grafo (prima controllo se già esiste)
+		if(Graph.containsKey(myKey))
+			tmp = (Node)Graph.get(myKey);
+		else{
+			ArrayList args = new ArrayList();
+			args.add(v.getId());
+			Graph.put(myKey,tmp = new Node(myKey,"car",args));
+		}
+		return tmp;
+	}
+	| 
+	"cdr" "(" v=T() ")"
+	{
+		myKey = "cdr("+v.getId()+")";
+		// Aggiungo il mio identificatore nella lista dei padri dei miei due figli
+		v.appendParent(myKey);
+		
+		// Adesso devo aggiungere questo nodo nel grafo (prima controllo se già esiste)
+		if(Graph.containsKey(myKey))
+			tmp = (Node)Graph.get(myKey);
+		else{
+			ArrayList args = new ArrayList();
+			args.add(v.getId());
+			Graph.put(myKey,tmp = new Node(myKey,"cdr",args));
+		}
+		return tmp;
+	}
+	|
+	fun=<FUN> "(" v=T() (","u=T(){ myArgs=myArgs+","+u.getId();argFun.add(u.getId());argsl++; })* ")"
+	{	
+		argsl++; /* Mi mantiene il numero di argomenti della funzione */
+		
+		/* Devo controllare che questa funzione con una arietà diversa non sia già presente */        //System.out.println(fun.image);		if(!checkArity.containsKey(fun.image))		{		  checkArity.put(fun.image,argsl);		  		}else		{		  //System.out.println(Integer.parseInt(checkArity.get(fun.image).toString()));		  if(Integer.parseInt(checkArity.get(fun.image).toString()) != argsl)		      throw new ParseException("errore con una fun "+fun.image);		}		
+		//Object[] graphArray = (Graph.values()).toArray();
+		//for(int i=0;i<graphArray.length;i++){
+		//	Node tt = (Node)graphArray[i];
+		//	System.out.println("arg: "+tt.argsSize()+"-"+argsl);											//DEBUG
+		//	if(tt.getFun().equals(fun.image) && tt.argsSize() != argsl )
+		//		throw new ParseException("errore con una fun "+fun.image+" - "+tt.getFun()+" - "+tt.argsSize() + " - "+argsl);
+		//}
+		/* Se arrivo qui significa che è andato tutto bene e posso aggiungere */
+		myKey=fun.image+"("+v.getId()+myArgs+")";
+        //System.out.println("myKey fun "+myKey);
+		argFun.add(v.getId()); /* aggiungo l'ultimo argomento alla lista dei parametri */
+		
+		/* Aggiungo il padre a tutti i figli */
+		Iterator i = argFun.iterator();
+		String ss;
+		while(i.hasNext()){
+			Node temp = (Node)(Graph.get((String)i.next()));
+			temp.appendParent(myKey);
+		}
+        /* Devo controllare se la funzione già essite per evitare di sovrascriverla         * può causare problemi in caso di funzioni annidate         * F(F(a))=a;F(a)!=a         */
+        if(!Graph.containsKey(myKey))     
+		  Graph.put(myKey,tmp = new Node(myKey,fun.image,argFun));
+		else		    tmp = (Node)Graph.get(myKey);
+		//System.out.println("-:"+tmp);																		//DEBUG
+       // System.out.println("-: -"+tmp.getId());
+		return tmp;
+	}
+	| 
+	a=<ALPHA>
+	{
+		// Quando incontro un terminale, se non è già nel grafo allora lo aggiungo
+		if(Graph.containsKey(a.image))
+			tmp = (Node)Graph.get(a.image);
+		else
+			Graph.put(a.image,tmp = new Node(a.image));
+		return tmp;
+	}
+}
