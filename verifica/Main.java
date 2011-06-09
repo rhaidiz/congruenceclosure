@@ -3,12 +3,17 @@ package verifica;
 import gui.JMainFrame;
 import gui.JResult;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Scanner;
 
 import javax.swing.JDialog;
@@ -19,7 +24,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import parser.ParseException;
 import parser.Parser;
-
 import bean.Node;
 
 /**
@@ -54,7 +58,10 @@ public class Main {
    * Lista degli atoms da controllare
    * */
   private static ArrayList<String> consfn;
-
+  /**
+   * 
+   */
+  private static Integer edges = 0;
   /**
    * Metodo principale che avvia tutto il programma sia da GUI che da
    * command-line.
@@ -125,13 +132,29 @@ public class Main {
 	long fine = System.currentTimeMillis();
 	tempo += (fine - inizio);
 	int tCorrS = (int) tempo / nTest;
-
+	
 	System.out.print(Graph.size());
+	int edges = 0;
+	for(Node n: Graph.values()){
+	  edges += n.getArgs().size();
+	}
+	System.out.print(";"+edges);
 	if (result)
 	  System.out.print(";Soddisfacibile;");
 	else
 	  System.out.print(";Non Soddisfacibile;");
 	System.out.println(tCorrS);
+
+	/* esporta le classi di congruenza */
+//	try {
+//	  PrintWriter writer = new PrintWriter("/Users/demeof/Desktop/Verifica/congruence_classes.txt");
+//	  writer.print(exportCC());
+//	  writer.close();
+//	} catch (FileNotFoundException e) {
+//	  // TODO Auto-generated catch block
+//	  e.printStackTrace();
+//	}
+//	System.out.print("stampato");
   }
 
   private static void execGui() {
@@ -182,7 +205,9 @@ public class Main {
 	consList = new ArrayList<String>();
 	atoms = new ArrayList<String>();
 	consfn = new ArrayList<String>();
+
 	new Parser(formula, Graph, equals, noEquals, consList, atoms, consfn);
+	
 	// Dopo il parser, setto il risultato nella finestra jResult se ho la GUI
 	if( window != null ){
 	  window.setParsingResult(Graph.size());
@@ -202,6 +227,58 @@ public class Main {
 	return true;
   }
 
+  /**
+   * Exports a representation of this dag in the form of the
+   * congruence classes formed by merges.
+   * Every class contains its terms in lexicographic order,
+   * and is separated from the next by an empty line.
+   * The classes appear ordered by their first term.
+   *
+   * @return a string containing the congruence classes
+   */
+  public static String exportCC() {
+      Map<String,ArrayList<String>> cc = new HashMap<String, ArrayList<String>>();
+
+      /* separate nodes by congruence class */
+      for( Node n : Graph.values() ) {
+          String representative = findH(n.getId());
+          ArrayList<String> cclass = cc.get(representative);
+          if( cclass == null ) {
+              cclass = new ArrayList<String>();
+              cc.put(representative, cclass);
+          }
+          cclass.add(n.getId());
+      }
+
+      /* sort every class */
+      for( ArrayList<String> cclass : cc.values() ) {
+          Collections.sort(cclass);
+      }
+
+      /* copy classes in an ArrayList... */
+      ArrayList<ArrayList<String>> cclasses = new ArrayList<ArrayList<String>>(cc.values());
+      /* ... and sort them comparing their first term */
+      Collections.sort(cclasses, new Comparator<ArrayList<String>>() {
+          public int compare(ArrayList<String> c1, ArrayList<String> c2) {
+              return c1.get(0).compareTo(c2.get(0));
+          }
+      });
+
+      /* build the final string */
+      StringBuilder s = new StringBuilder();
+
+      for( ArrayList<String> cclass : cclasses ) {
+          for (String term : cclass) {
+              s.append(term);
+              s.append("\n");
+          }
+          s.append("\n");
+      }
+      
+      return s.toString();
+  }
+
+  
   /**
    * Metodo che esegue l'algoritmo del libro e applica le seguenti euristiche:
    * compressione dei cammini, unione per rango, decisione di insoddisfacibilitˆ

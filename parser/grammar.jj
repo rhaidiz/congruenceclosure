@@ -4,9 +4,6 @@ PARSER_BEGIN(Parser)
 
 package parser;
 
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.regex.*;
 import java.util.*;
 import bean.Node;import verifica.Config;
 
@@ -71,7 +68,7 @@ void C() throws ParseException, TokenMgrError: {
         noEquals.add(R.getId());        L.addForbidden(R.getId());        R.addForbidden(L.getId());	  }	}
     | "atom" "(" L=T() ")"
     {
-      atoms.add(L.getId());    }    | "-" "atom" "(" L=T() ")"    {            if(!nonatom.contains("-atom("+L.getId()+")"))      {        //System.out.println("-atom("+L.getId()+")");        nonatom.add("-atom("+L.getId()+")");        String consKey = "cons(f_"+inc+","+"ff_"+inc+")";        /* lo metto nella lista dei cons da controllare */        consfn.add(consKey);        ArrayList argCons = new ArrayList();        ArrayList args = new ArrayList();        /* Aggiungo gli argomenti dei cons */        argCons.add("f_"+inc);        argCons.add("ff_"+inc);        Node tt;        Graph.put("f_"+inc,tt = new Node("f_"+inc));        tt.appendParent(consKey);        Graph.put("ff_"+inc,tt = new Node("ff_"+inc));        tt.appendParent(consKey);                Node tmp;        Graph.put(consKey,tmp = new Node(consKey,"cons",argCons));        tmp.appendParent("car("+consKey+")");        tmp.appendParent("cdr("+consKey+")");                args.add(consKey);                Graph.put("car("+consKey+")", new Node("car("+consKey+")","car",args));        Graph.put("cdr("+consKey+")", new Node("cdr("+consKey+")","cdr",args));                cons.add("car("+consKey+")");        cons.add("f_"+inc);        cons.add("cdr("+consKey+")");        cons.add("ff_"+inc);        //System.out.println("--"+inc);        equals.add(L.getId());        equals.add(consKey);        inc++;              }          } 
+      atoms.add(L.getId());    }    | "-" "atom" "(" L=T() ")"    {            if(!nonatom.contains("-atom("+L.getId()+")"))      {        //System.out.println("-atom("+L.getId()+")");        nonatom.add("-atom("+L.getId()+")");        String consKey = "cons(f_"+inc+","+"ff_"+inc+")";        /* lo metto nella lista dei cons da controllare */        consfn.add(consKey);        ArrayList argCons = new ArrayList();        ArrayList args = new ArrayList();        /* Aggiungo gli argomenti dei cons */        argCons.add("f_"+inc);        argCons.add("ff_"+inc);        Node tt;        Graph.put("f_"+inc,tt = new Node("f_"+inc));        tt.appendParent(consKey);        Graph.put("ff_"+inc,tt = new Node("ff_"+inc));        tt.appendParent(consKey);                Node tmp;        Graph.put(consKey,tmp = new Node(consKey,"cons",argCons));        tmp.appendParent("car("+consKey+")");        tmp.appendParent("cdr("+consKey+")");                args.add(consKey);                Graph.put("car("+consKey+")", new Node("car("+consKey+")","car",args));        Graph.put("cdr("+consKey+")", new Node("cdr("+consKey+")","cdr",args));        cons.add("car("+consKey+")");        cons.add("f_"+inc);        cons.add("cdr("+consKey+")");        cons.add("ff_"+inc);        //System.out.println("--"+inc);        equals.add(L.getId());        equals.add(consKey);        inc++;              }          } 
  
 }
 
@@ -120,7 +117,7 @@ Node T() throws ParseException, TokenMgrError: {
 			cons.add(v.getId());
 			cons.add("cdr("+myKey+")");
             cons.add(u.getId());
-		}
+		}		
 		return tmp;
 	}
 	| 
@@ -162,14 +159,7 @@ Node T() throws ParseException, TokenMgrError: {
 	{	
 		argsl++; /* Mi mantiene il numero di argomenti della funzione */
 		
-		/* Devo controllare che questa funzione con una arietˆ diversa non sia giˆ presente */        //System.out.println(fun.image);		if(!checkArity.containsKey(fun.image))		{		  checkArity.put(fun.image,argsl);		  		}else		{		  //System.out.println(Integer.parseInt(checkArity.get(fun.image).toString()));		  if(Integer.parseInt(checkArity.get(fun.image).toString()) != argsl)		      throw new ParseException("errore con una fun "+fun.image);		}		
-		//Object[] graphArray = (Graph.values()).toArray();
-		//for(int i=0;i<graphArray.length;i++){
-		//	Node tt = (Node)graphArray[i];
-		//	System.out.println("arg: "+tt.argsSize()+"-"+argsl);											//DEBUG
-		//	if(tt.getFun().equals(fun.image) && tt.argsSize() != argsl )
-		//		throw new ParseException("errore con una fun "+fun.image+" - "+tt.getFun()+" - "+tt.argsSize() + " - "+argsl);
-		//}
+		/* Devo controllare che questa funzione con una arietˆ diversa non sia giˆ presente */        //System.out.println(fun.image);		if(!checkArity.containsKey(fun.image))		{		  checkArity.put(fun.image,argsl);		  		}else		{		  //System.out.println(Integer.parseInt(checkArity.get(fun.image).toString()));		  if(Integer.parseInt(checkArity.get(fun.image).toString()) != argsl)		      throw new ParseException("errore con una fun "+fun.image);		}
 		/* Se arrivo qui significa che  andato tutto bene e posso aggiungere */
 		myKey=fun.image+"("+v.getId()+myArgs+")";
         //System.out.println("myKey fun "+myKey);
@@ -186,8 +176,6 @@ Node T() throws ParseException, TokenMgrError: {
         if(!Graph.containsKey(myKey))     
 		  Graph.put(myKey,tmp = new Node(myKey,fun.image,argFun));
 		else		    tmp = (Node)Graph.get(myKey);
-		//System.out.println("-:"+tmp);																		//DEBUG
-       // System.out.println("-: -"+tmp.getId());
 		return tmp;
 	}
 	| 
