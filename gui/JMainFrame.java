@@ -1,7 +1,6 @@
 package gui;
 
 import java.awt.Container;
-import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -49,12 +48,16 @@ public class JMainFrame extends JFrame {
    * Contiene la formula letta da file.
    */
   private StringBuilder input = new StringBuilder();
+  /**
+   * La finestra con i risultati della computazione.
+   */
+  private JResult jresult = null;
 
   /**
    * Costruttore della finestra principale.
    */
   public JMainFrame() {
-	setTitle("ConguenceClosure [alpha]");
+	setTitle("Conguence Closure Algorithm [RC1]");
 	setSize(450, 370);
 	setLocationRelativeTo(null);
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -80,7 +83,7 @@ public class JMainFrame extends JFrame {
 	text_formula.setSize(220, 65);
 	text_formula.setLocation(0, 0);
 	text_formula.setWrapStyleWord(true);
-	//text_formula.setLineWrap(true);
+	// text_formula.setLineWrap(true);
 
 	scrollPane = new JScrollPane(text_formula);
 	scrollPane.setSize(420, 265);
@@ -97,8 +100,11 @@ public class JMainFrame extends JFrame {
 	  @Override
 	  public void actionPerformed(ActionEvent arg0) {
 		/* Lancia la finestra di esecuzione dell'algoritmo */
-		JFrame JResult = new JResult(text_formula.getText());
-		JResult.setVisible(true);
+		if (jresult == null)
+		  jresult = new JResult();
+		jresult.setFormula(text_formula.getText());
+		jresult.setVisible(true);
+
 	  }
 	});
 	c.add(btn_exec);
@@ -124,10 +130,31 @@ public class JMainFrame extends JFrame {
 	  in.close();
 	} catch (FileNotFoundException e) {
 	  // TODO Auto-generated catch block
-	  e.printStackTrace();
+	  System.out.print("ciao");
+	  // e.printStackTrace();
 	} catch (IOException e) {
 	  // TODO Auto-generated catch block
+	  // e.printStackTrace();
+	} catch (NullPointerException e) {
+
+	}
+  }
+
+  private void saveFile() {
+	/* Salve file formula esterno */
+	JFileChooser file_d = new JFileChooser();
+	file_d.showDialog(null, "Save file");
+	try {
+	  File f = file_d.getSelectedFile();
+	  PrintWriter writer = new PrintWriter(f.getAbsoluteFile());
+	  System.out.println(f.getAbsoluteFile() + f.getName());
+	  writer.println(text_formula.getText());
+	  writer.close();
+	} catch (FileNotFoundException e) {
+	  // TODO Auto-generated catch block
 	  e.printStackTrace();
+	} catch (NullPointerException e) {
+
 	}
   }
 
@@ -157,19 +184,7 @@ public class JMainFrame extends JFrame {
 	save.addActionListener(new ActionListener() {
 	  @Override
 	  public void actionPerformed(ActionEvent arg0) {
-		/* Salve file formula esterno */
-		JFileChooser file_d = new JFileChooser();
-		file_d.showDialog(null, "Save file");
-		try {
-		  File f = file_d.getSelectedFile();
-		  PrintWriter writer = new PrintWriter(f.getAbsoluteFile());
-		  System.out.println(f.getAbsoluteFile() + f.getName());
-		  writer.println(text_formula.getText());
-		  writer.close();
-		} catch (FileNotFoundException e) {
-		  // TODO Auto-generated catch block
-		  e.printStackTrace();
-		}
+		saveFile();
 	  }
 	});
 

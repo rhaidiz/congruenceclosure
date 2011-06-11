@@ -32,7 +32,7 @@ public class JResult extends JFrame implements WindowListener {
 
   private String f;
 
-  public JResult(String formula) {
+  public JResult() {
 	setTitle("Running...");
 	setSize(240, 150);
 	setLocationRelativeTo(null);
@@ -42,12 +42,9 @@ public class JResult extends JFrame implements WindowListener {
 	container.setLayout(new GroupLayout(container));
 	initComponents(container);
 	addWindowListener(this);
-	f = formula;
-	// runAlgorithm(formula);
   }
 
   public void windowOpened(WindowEvent e) {
-	// runAlgorithm(f);
 	new Thread(new Runnable() {
 	  public void run() {
 		runAlgorithm(f);
@@ -105,7 +102,7 @@ public class JResult extends JFrame implements WindowListener {
 	long fine = System.currentTimeMillis();
 	tempo += (fine - inizio);
 	setTitle("Finish");
-	label_extime.setText(label_extime.getText() + " " + (tempo / 1000) + "s");
+	label_extime.setText("Execution time: " + (tempo / 1000) + "s");
 
   }
 
@@ -115,14 +112,24 @@ public class JResult extends JFrame implements WindowListener {
    * @param graphDim dimensione del grafo
    */
   public void setParsingResult(int graphDim) {
-	label_parser.setText(label_parser.getText() + "DONE!");
-	label_graph_dimension.setText(label_graph_dimension.getText() + graphDim);
+	label_parser.setText("Parsing...DONE!");
+	label_graph_dimension.setText("Graph Dimension: "+graphDim);
   }
 
+  public void setFormula(String formula){
+	f = formula;
+  }
+  
   @Override
   public void windowActivated(WindowEvent arg0) {
 	// TODO Auto-generated method stub
-
+	setTitle("Running...");
+	new Thread(new Runnable() {
+	  public void run() {
+		runAlgorithm(f);
+	  }
+	}).start();
+	//f = formula;
   }
 
   @Override
