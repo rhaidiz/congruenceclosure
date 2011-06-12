@@ -128,7 +128,6 @@ public class Parser implements ParserConstants {
       break;
     case 17:
       jj_consume_token(17);
-      jj_consume_token(13);
       jj_consume_token(6);
       L = T();
       jj_consume_token(7);

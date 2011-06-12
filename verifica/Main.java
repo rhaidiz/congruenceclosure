@@ -78,7 +78,7 @@ public class Main {
 
 	if (args.length < 1) {
 	  System.out
-		  .println("Usage:\t cc.jar -h <filename or formula> \t(to execute from command line)\n\t cc.jar -gui \t\t(to execute from gui)");
+		  .println("Usage:\t cc.jar [-h heuristics] <File | Formula> \t(to execute from command line)\n\t cc.jar -gui \t\t(to execute from gui)");
 	  System.exit(-1);
 	}
 
