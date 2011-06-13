@@ -59,9 +59,9 @@ public class Main {
    * */
   private static ArrayList<String> consfn;
   /**
-   * 
+   * Conta il numero di merge fatte.
    */
-  private static Integer edges = 0;
+  private static Integer merges = 0;
   /**
    * Metodo principale che avvia tutto il programma sia da GUI che da
    * command-line.
@@ -128,10 +128,13 @@ public class Main {
 	  System.exit(-1);
 	} catch (Throwable e) {
 	  result = false;
+	  e.printStackTrace();
 	}
 	long fine = System.currentTimeMillis();
 	tempo += (fine - inizio);
 	int tCorrS = (int) tempo / nTest;
+	
+	System.out.print(merges+";");
 	
 	System.out.print(Graph.size());
 	int edges = 0;
@@ -205,7 +208,7 @@ public class Main {
 	consList = new ArrayList<String>();
 	atoms = new ArrayList<String>();
 	consfn = new ArrayList<String>();
-
+	merges = 0;
 	new Parser(formula, Graph, equals, noEquals, consList, atoms, consfn);
 	
 	// Dopo il parser, setto il risultato nella finestra jResult se ho la GUI
@@ -433,6 +436,8 @@ public class Main {
 	
 	if (!findH(id1).equals(findH(id2))) {
 
+	  
+	  
 	  if (node(findH(id1)).getForbidden().contains(id2))
 		throw new Exception("Insod");
 	  
@@ -451,6 +456,9 @@ public class Main {
 		}
 	  }
 
+	  /* conto il numero di merge fatte */
+	  merges++;
+	  
 	  /* Salvo i ccparent per propagare l'assioma di congruenza */
 	  Object[] AP1 = ccparentH(id1).toArray();
 	  Object[] AP2 = ccparentH(id2).toArray();
@@ -567,6 +575,9 @@ public class Main {
 	  HashSet<String> P1 = _ccparent(id1);
 	  HashSet<String> P2 = _ccparent(id2);
 
+	  /* conto il numero di merge fatte */
+	  merges++;
+	  
 	  Object[] AP1 = P1.toArray();
 	  Object[] AP2 = P2.toArray();
 
