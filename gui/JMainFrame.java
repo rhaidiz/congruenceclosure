@@ -59,7 +59,7 @@ public class JMainFrame extends JFrame {
    * Costruttore della finestra principale.
    */
   public JMainFrame() {
-	setTitle("Conguence Closure Algorithm [RC1]");
+	setTitle("Conguence Closure Algorithm");
 	setSize(450, 370);
 	setLocationRelativeTo(null);
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
