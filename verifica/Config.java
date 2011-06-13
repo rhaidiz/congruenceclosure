@@ -15,8 +15,8 @@ public class Config {
 
   /**
    * Algoritmo da utilizzare, default usa Book + speed
-   * 0 Book+speed
-   * 1 Book semplice
+   * 0 NO+speed
+   * 1 NO semplice
    */
   public static int algorithm = 0;
   

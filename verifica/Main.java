@@ -134,8 +134,6 @@ public class Main {
 	tempo += (fine - inizio);
 	int tCorrS = (int) tempo / nTest;
 	
-	System.out.print(merges+";");
-	
 	System.out.print(Graph.size());
 	int edges = 0;
 	for(Node n: Graph.values()){
@@ -210,7 +208,7 @@ public class Main {
 	consfn = new ArrayList<String>();
 	merges = 0;
 	new Parser(formula, Graph, equals, noEquals, consList, atoms, consfn);
-	
+	//System.out.println("---");
 	// Dopo il parser, setto il risultato nella finestra jResult se ho la GUI
 	if( window != null ){
 	  window.setParsingResult(Graph.size());
@@ -444,14 +442,14 @@ public class Main {
 	  /* Euristica dei forbidden */
 	  for (String forb : node(find1).getForbidden()) {
 		if (findH(forb).equals(find2)) {
-		  System.out.println("euristica 1: ["+find1+"]"+forb+" - "+find2);
+		  //System.out.println("euristica 1: ["+find1+"]"+forb+" - "+find2);
 		  throw new Exception("Non soddisfacibile");
 		}
 	  }
 	  
 	  for (String forb : node(find2).getForbidden()) {
 		if (findH(forb).equals(find1)) {
-		  System.out.println("euristica 2: ["+find2+"]"+forb+" - "+find1);
+		  //System.out.println("euristica 2: ["+find2+"]"+forb+" - "+find1);
 		  throw new Exception("Non soddisfacibile");
 		}
 	  }

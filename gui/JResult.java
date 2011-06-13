@@ -20,6 +20,8 @@ import verifica.Main;
  */
 public class JResult extends JFrame implements WindowListener {
 
+  private JResult jr;
+  
   private static final long serialVersionUID = 1L;
 
   /**
@@ -42,14 +44,15 @@ public class JResult extends JFrame implements WindowListener {
 	container.setLayout(new GroupLayout(container));
 	initComponents(container);
 	addWindowListener(this);
+	jr = this;
   }
 
   public void windowOpened(WindowEvent e) {
-	new Thread(new Runnable() {
-	  public void run() {
-		runAlgorithm(f);
-	  }
-	}).start();
+//	new Thread(new Runnable() {
+//	  public void run() {
+//		runAlgorithm(f);
+//	  }
+//	}).start();
   }
 
   private void initComponents(Container c) {
@@ -82,7 +85,7 @@ public class JResult extends JFrame implements WindowListener {
 	long tempo = 0;
 	long inizio = System.currentTimeMillis();
 	try {
-	  boolean sod = Main.execCC(formula, this);
+	  boolean sod = Main.execCC(formula, jr);
 	  if (sod) {
 		label_sodd.setText("Soddisfacibile");
 	  } else {

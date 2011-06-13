@@ -9,7 +9,7 @@
 % cambio i margini
 \usepackage{vmargin}
 \setpapersize{A4}
-\setmarginsrb{25mm}{0mm}{25mm}{0mm}%
+\setmarginsrb{25mm}{0mm}{25mm}{10mm}%
              {0mm}{10mm}{0mm}{10mm}
 
 % Setta alcuni attributi del titolo
@@ -24,12 +24,12 @@
 \footnotesize
 % L'asterisco evita che compaia il numero a fianco del titolo
 \section*{Introduzione}
-Questo documento descrive l'implementazione della procedure di Nelson-Oppen descritta a lezione per il calcolo della soddisfacibilità di formule scritte nell'unione delle segnature della teoria dell'uguaglianza e di quella delle liste. Oltre alla semplice implementazione dell'algoritmo proposto dal libro sono state introdotte delle euristiche che hanno portato a notevoli migliorie prestazionali che saranno esaminate nel seguito.
-Il liguaggio di programmazione scelto è Java, il quale offre un variegato insieme di strutture dati molto utili e ben implementate.
+Questo documento descrive l'implementazione della procedure di Nelson-Oppen, descritta a lezione, per il calcolo della soddisfacibilità di formule scritte nell'unione delle segnature della teoria dell'uguaglianza e di quella delle liste. Oltre alla semplice implementazione dell'algoritmo proposto dal libro, sono state introdotte delle euristiche che hanno portato a notevoli migliorie prestazionali che saranno esaminate nel seguito.
+Il linguaggio di programmazione scelto è Java, il quale offre un variegato insieme di strutture dati molto utili e ben implementate.
 Si farà anche un confronto con l'algoritmo proposto da Downey, Sethi e Tarjan implementato da Marco Tamassia.
 
 \section{Parser}
-L'implementazione del progetto parte con la stesura del Parser con lo scopo di leggere le formule nella teoria dell'uguaglianza $(T_E)$ e nella teoria delle liste $(T_{cons})$.
+L'implementazione del progetto parte con la stesura del Parser, con lo scopo di leggere le formule nelle due teoria dell'uguaglianza $(T_E)$ e delle liste $(T_{cons})$.
 A tal scopo si è scelto di utilizzare il compilatore $JavaCC$ il quale, definita una grammattica context-free BNF, genera le classi necessarie al riconoscimento delle formule in input.
 La peculiarità di $JavaCC$ è quella di generare insieme un analizzatore lessicale e uno sintattico partendo semplicemente dal file che definisce la grammatica.
 La grammatica scelta che descrive la sintassi delle formule accettate è la seguente:
@@ -40,47 +40,48 @@ Token ::= cons(Token, Token) | car(Token) | cdr(Token) | Token | Fun(Token)
 Token ::= [a-z]+[0-9]*
 Fun ::= [A-Z][a-z0-9]*
 \end{lstlisting}
-Come riportato dal testo, ci concentriamo solo sul frammento senza quantificatori.
-Questa grammatica è stata riportata nel file {\tt grammar.jj} alla quale è stata aggiunto codice Java che definisce la semantica per la costruzione del DAG su cui opera l'algoritmo.
-Inoltre si è scelto di generare un errore qualora nella formula ci siano due funzioni con stesso nome e arietà diversa.
+Come riportato dal testo, ci concentreremo solo sul frammento senza quantificatori.
+Questa grammatica è stata riportata nel file {\tt grammar.jj} alla quale è stato aggiunto codice Java che definisce la semantica per la costruzione del DAG su cui opera l'algoritmo.
+Inoltre si è scelto di generare un errore qualora nella formula vi siano due funzioni con stesso nome e diversa arietà.
 \section{Scelte implementative}
-Oltre alla possibilità di utilizzare il progetto tramite la riga di comando si è scelto di implementare una piccola interfaccia grafica al fine di agevolare la verifical'uso dell'applicazione.
+Oltre alla possibilità di utilizzare il progetto tramite riga di comando si è scelto di implementare una piccola interfaccia grafica al fine di agevolare l'uso dell'applicazione.
 Si è principalmente adoperata la riga di comando per la generazione automatizzata di test prestazionali.
-La classe principale è {\tt verifica/Main.java} che avvia l'una o l'altra modalità.
-Nello stesso file è stato anche implementato l'algoritmo di Chiusura di Congruenza di Nelson-Oppen nelle due versioni "semplice" e con euristiche.
-Per separare le due implementazioni si è scelto di riscrivere ogni metodo differenziandolo dall'analogo nell'altra implementazione.
-In particolare la segnatura dei metodi prevede che:
+La classe principale, {\tt verifica/Main.java}, avvia l'una o l'altra modalità.
+Nello stesso file è stato anche implementato l'algoritmo, oggetto di questo documento, in due versioni "semplice" e con euristiche.
+Per separare le due implementazioni, si è scelto di riscrivere due volte, in base alla versione, ogni metodo differenziandolo dall'analogo nell'altra implementazione.
+In particolare la segnatura prevede che:
 \begin{itemize}
 	\item i metodi che fanno parte dell'implementazione con euristiche terminino tutti con il carattere H (e.g.: mergeH(...))
 	\item i metodi che fanno parte dell'implementazione semplice inizino tutti con il carattere \_ (e.d.: \_merge(...))
 \end{itemize}
-L'avvio dell'algoritmo di chiusura di congruenza è dato dalla chiamata a  
+L'avvio dell'algoritmo di chiusura di congruenza è dato dall'invocazione del metodo  
 {\tt execCC(String formula, JResult window)}
-dove {\tt formula} è la formula di cui verificare la soddisfacibilità e {\tt window} è un oggetto {\tt JResult} che rappresenta la finestra che visualizzerà l'uotput dell'algoritmo (parametro usato solo nell'invocazione con GUI).
+dove {\tt formula} è la formula di cui verificare la soddisfacibilità e {\tt window} è un oggetto {\tt JResult} che rappresenta la finestra che visualizzerà l'output dell'algoritmo (parametro usato solo nell'invocazione con GUI).
 \subsection{Strutture dati di supporto}
-Nella prima fase di esecuzione viene chiamato il Parser, al quale vengono passate, oltre alla stringa da parserizzare, diverse strutture dati di supporto:
+Nella prima fase di esecuzione viene chiamato il Parser, al quale vengono passate, oltre alla stringa in input, diverse strutture dati di supporto:
 \begin{itemize}
 	\item Graph: {\tt HashMap} che mantiene la struttura del grafo;
-	\item equals: {\tt ArrayList} che mantiene le chiavi dei letterali uguali nella formula;
-	\item noEquals: {\tt ArrayList} che mantiene le chiavi dei letterali disuguali nella formula;
+	\item equals: {\tt ArrayList} che mantiene le chiavi dei letterali uguali;
+	\item noEquals: {\tt ArrayList} che mantiene le chiavi dei letterali diversi;
 	\item consList: {\tt ArrayList} che mantiene le chiavi dei {\tt car()} e {\tt cdr()} degli operatori {\tt cons()} di cui fare la prima serie di {\tt MERGE};
 	\item atoms: {\tt ArrayList} che mantiene le chiavi degli {\tt atom()};
-	\item consfn: {\tt ArrayList} che mantiene le chiavi dei {\tt cons()} da confrontare con le chiavi degli {\tt atoms()}; 
+	\item consfn: {\tt ArrayList} che mantiene le chiavi dei {\tt cons()} che non dovranno appartenere alla struttura atoms; 
 \end{itemize}
-Si noti una particolarità: le strutture {\tt equals}, {\tt noEquals} e {\tt consList} rappresentano logicamente coppie di chiavi che devono essere usate per effettuare le {\tt MERGE} ma la struttura {\tt ArrayList} non gestisce coppie ma bensì singoli elementi in successione.
-Si è ugualmente scelta questa struttura avendo cura di riempire gli {\tt ArrayList} in modo che un elemento in posizione pari fosse in relazione con il successivo elemento dispari. $(2i \sim 2i+1)$
+Si noti una particolarità: le strutture {\tt equals}, {\tt noEquals} e {\tt consList} rappresentano logicamente coppie di chiavi che devono essere usate per effettuare le {\tt MERGE}.
+La struttura {\tt ArrayList}, però, non gestisce coppie bensì singoli elementi in successione.
+Si è ugualmente scelta questa struttura avendo cura di riempirla in modo che un elemento in posizione pari sia in relazione con il successivo elemento dispari. $(2i \sim 2i+1)$
 \subsection{Chiavi}
-Per meglio identificare ogni elemento all'interno delle strutture dati di appoggio si è scelto di utilizzare una stringa come chiave univoca.
-I caratteri che compongono la stringa sono li stessi che identificano un termine all'interno della formula. Ad esempio:
+Per meglio identificare ogni elemento all'interno delle strutture dati di appoggio si è scelto di utilizzare una stringa come chiave univoca di un nodo.
+I caratteri che formano la stringa sono gli stessi che compongono un termine nella formula. Ad esempio:
 \begin{center}
 $F : car(x) = cdr(y) \wedge x = y $
 \end{center}
 genererà un grafo con 4 nodi le cui chiavi saranno le stringhe: $car(x),cdr(y),x,y$, ognuna delle quali identifica un nodo.
 
-Questo consente una facile gestione logica dei nodi unito ad una notevole velocità di accesso ai nodi stessi tramite l'uso della struttura {\tt HashMap}.
+Questo consente una facile gestione logica dei nodi unito ad una notevole velocità di accesso ai nodi stessi grazie all'uso della struttura {\tt HashMap}.
 
 \subsection{Algoritmo}
-Dopo la fase di parsing viene chiamato uno dei due metodi {\tt NelsonOppenSpeedUp(String formula)} o {\tt NelsonOppen(String formula)} che rispettivamente eseguono l'algoritmo con euristiche e senza euristiche.
+Dopo la fase di parsing viene chiamato uno dei due metodi {\tt NelsonOppenSpeedUp(String formula)} o {\tt NelsonOppen(String formula)} che rispettivamente eseguono l'algoritmo con e senza euristiche.
 Non mi soffermerò sulla specifica dell'algoritmo privo di euristiche in quanto ampiamente descritto sul testo di riferimento nel Capitolo 9 (pag. 251-258).
 
 \subsection{Euristiche}
@@ -88,46 +89,47 @@ Al fine di migliorare le prestazioni dell'algoritmo di Nelson-Oppen, sono state 
 
 \begin{itemize}
 	\item {\bf Compressione dei cammini:} l'algoritmo di Nelson-Oppen utilizza gli insiemi disgiunti per rappresentare le classi di congruenza che dovranno essere unite. Ogni elemento di un insieme disgiunto ha un campo {\tt find} che lo unisce in catena al rappresentante della classe a cui appartiene.
-La compressione dei cammini è un'euristica che fa in modo che il percorso da un nodo al suo rappresentante sia diretto, collegando direttamente ogni nodo di una classe con il suo rappresentante.
-Per fare ciò, ogni qualvolta viene chiamato il metodo {\tt find(id)} ricorsivamente si sale nella catena e quando lo stack viene disfatto all'indientro vengono modificati tutti i campi {\tt find} dei nodi visitati aggiornandoli con l'id del rappresentante della classe.
-	\item {\bf Unione per rango:} anche questa euristica va a migliorare la struttura per insiemi disgiunti e in particolare definisce un criterio con il quale scegliere il nuovo rappresentante di una classe in fase di {\tt union}, criterio non definito nell'algoritmo presente sul testo dove la scelta del nuovo rappresentante è del tutto arbitraria.
-Con l'unione per rango viene scelto come nuovo rappresentante la radice del sottoalbero con più nodi, a cui unire la radice del sottoalbero con meno nodi. Per semplificare il mantenimento del numero di nodi di ogni sottoalbero è stato introdotto un nuovo campo nell'oggetto {\tt Node} chiamato {\tt rank}.
-Inizialmente inizializzato a 0 per ogni nodo mantiene un limite superiore all'altezza del nodo, la radice con il rango più piccolo viene fatta puntare alla radice con rango maggiore.
-Così facendo avremo un minor numero di nodi ad avere una più lunga catene di find prima di raggiungere il nuovo rappresentante. 
-
+La compressione dei cammini è un'euristica che collega direttamente ogni nodo con il rappresentante della classe.
+Per fare ciò, ogniqualvolta viene chiamato il metodo {\tt find(id)}, ricorsivamente si sale nella catena e quando lo stack sarà ripercorso all'indientro, vengono modificati tutti i campi {\tt find} dei nodi visitati, aggiornandoli con l'id del rappresentante.
+	\item {\bf Unione per rango:} anche questa euristica migliora la struttura per insiemi disgiunti.
+In particolare definisce un criterio con il quale scegliere il nuovo rappresentante in fase di {\tt union}, criterio non definito nell'algoritmo del testo dove la scelta è arbitraria.
+Con l'unione per rango viene scelto come nuovo rappresentante la radice del sottoalbero con più nodi, a cui unire la radice del sottoalbero con meno nodi. Per semplificare il mantenimento del numero di nodi di ogni sottoalbero è stato introdotto un campo {\tt rank} nell'oggetto {\tt Node} inizialmente a 0.
+Per ogni nodo mantiene un limite superiore all'altezza del nodo stesso, la radice con il rango più piccolo viene fatta puntare alla radice con rango maggiore.
+Così facendo un minor numero di nodi, con lunghe catene di find, saranno visitati prima di raggiungere il nuovo rappresentante. 
 	\item {\bf Letterali vietati:} quest'ultima euristica non riguarda gli insiemi disgiunti ma aiuta a terminare la computazione di una formula non soddisfacile appena si scopre una contraddizione.
-L'idea è quella di scoprire una contraddizione in fase di {\tt merge} di due classi, terminando subito.
-Per fare questo ogni {\tt Node} è stato arricchito con una struttura {\tt HashSet} che mantiene l'insieme dei termini proibiti ($forbidden$) per quel nodo.
-La lista viene arricchita in fase di parsing, ogni qualvolta si incontra una disuguaglianza
-$F: ... s_{m+1} \not= t_{m+1} ... $, viene arricchito l'insieme $forbidden$ di $s_{m+1}$ aggiungendo $t_{m+1}$ e analogamente si popolano i $forbidden$ di $t_{m+1}$ aggiungendo $s_{m+1}$.
-Con questi due insiemi popolati restano da fare alcuni semplici controlli prima di effettuare una {\tt merge(id1,id2)}.
-Il primo controllo consiste nel verificare che nella lista $forbidden$ del rappresentante di {\tt id1} non sia presente il nodo {\tt id2}.
+L'idea è quella di controllare se, in fase di {\tt merge} le due classi unite non diano origine ad una contraddizione.
+Per fare questo ogni {\tt Node} è stato arricchito con una struttura {\tt HashSet} che mantiene l'insieme dei termini proibiti (da adesso $forbidden$) per quel nodo.
+La lista viene arricchita in fase di parsing: ogniqualvolta si incontra una disuguaglianza
+$F: ... s_{m+1} \not= t_{m+1} ... $, viene arricchito l'insieme $forbidden$ di $s_{m+1}$ aggiungendo $t_{m+1}$ e analogamente ai $forbidden$ di $t_{m+1}$ si aggiunge $s_{m+1}$.
+Restano quindi da fare alcuni semplici controlli prima di consentire una {\tt merge(id1,id2)}.
+Il primo controllo verifica che nei $forbidden$ del rappresentante di {\tt id1} non sia presente il nodo {\tt id2}.
 Vista la natura della struttura dati {\tt HashSet} questo controllo viene fatto in tempo atteso $O(1)$.
 Gli altri due controlli verificano in quale classe di congruenza si travano i $forbidden$ di {\tt id1} e di {\tt id2}.
-In particolare se il rappresentante di un $forbidden$ di {\tt id1} è uguale al rappresentante di {\tt id2} (e viceversa) allora avrò una contraddizione e termino la computazione restituendo insoddisfacibile.
-Se invece questi controlli danno esito negativo, ovvero non sono ci sono problemi nel fare la {\tt merge} delle due classi, allora si procede con la fase di unione all'interno della quale l'algoritmo si preoccupa di propagare la lista $forbidden$ al nuovo rappresentante della classe mantenendo l'insieme sempre aggiornato.
+In particolare, se il rappresentante di un $forbidden$ di {\tt id1} è uguale al rappresentante di {\tt id2} (e viceversa), allora le due classi non devono essere unite e termino restituendo insoddisfacibile.
+Altrimenti si procede con la fase di unione e l'insieme $forbidden$ viene propagata al nuovo rappresentante, mantenendo la struttura aggiornato.
 \end{itemize}
 Le prime due euristiche sono applicabili al caso generale di formula soddisfacibile o non soddisfacibile migliorando molto l'algoritmo semplice di Nelson-Oppen.
-L'ultima euristica aiuta solo in caso di formula insoddisfacibile abbattendo il tempo di computazione anche sotto all'implementazione di Downey, Sethi e Tarjan la quale non si presta a questo genere di euristica.
+L'ultima euristica aiuta solo in caso di formula insoddisfacibile, abbattendo il tempo di computazione e portandolo sotto all'implementazione di Downey, Sethi e Tarjan la quale non si presta a questo genere di euristica.
 \subsection{Generatore di formule}
-Al fine di ottenere benchmark considerevoli, si è implementato un piccolo generatore di formule casuali.
-Questo generatore è accessibile solo dall'interfaccia grafica e consente di generare una qualsiasi formula casuale che rispetti il numero di uguaglianze, disuguaglianze, atomi e non atomi impostati dall'utente.
-La probabilità di generare formule insoddisfacibili è molto alta ma specificando solo clausole di uguaglianza, o un numero considerevole di formule di ugualianza e un numero molto inferiore di disuguaglianze, è possibile generare formule soddisfacibili.
+Al fine di generare benchmark considerevoli, si è implementato un piccolo generatore di formule casuali.
+Questo generatore è accessibile solo dall'interfaccia grafica e consente di generare una qualsiasi formula casuale accettando come paramentri: numero di uguaglianze, disuguaglianze, atomi e non atomi.
+La probabilità di generare formule insoddisfacibili è molto alta ma specificando solo clausole di uguaglianza, o un numero considerevole di formule di uguaglianza rispetto alle disuguaglianze, è possibile generare formule soddisfacibili.
 \section{Test}
-Nel seguito sono riportati i risultati dei test effettuati sulle medesime formule con le tre diverse implementazioni: Nelson-Oppen (NO), Nelson-Oppen con euristiche (NO+) e Downey, Sethi e Tarjan (DST ) quest'ultimo implementato da Marco Tamassia.
+Nel seguito sono riportati i risultati dei test effettuati sulle medesime formule con le tre diverse implementazioni: Nelson-Oppen (NO), Nelson-Oppen con euristiche (NO+) e Downey, Sethi e Tarjan (DST) quest'ultimo implementato da Marco Tamassia.
 I test sono stati effettuati su due macchine distinte aventi:
 \begin{enumerate}
 	\item processore i5, frequenza di 2,4GHz con sistema operativo MacOS X e quindi con una JVM v1.6.0 proprietaria Apple
 	\item processore i7 a 2,4GHz con sistema operativo Ubuntu 11.04 con JVM v1.6.0 prodotta da Sun/Oracle
 \end{enumerate}
-I medesimi risultati su entrambe le macchine indicano che l'architettura di contorno non ha apportato contributi.
+I risultati sono stati i medesimi su entrambe le architetture, che quindi non hanno apportato contributi.
 
 GRAFICI E TABELLE
 
 \section{Conclusioni}
-L'algoritmo di base proposto da Nelson-Oppen presenta un andamento estremamente altalenante nonostante la sua complessità polinomiale $O(n^2)$, la medesima versione con euristiche ha portato ad una stabilità quasi inaspettata trattandosi di migliorie che non abbassano il grado di complessità dell'algoritmo di partenza.
-L'algoritmo DST presenta invece una maggior stabilità in tutti i test effettuati e quindi è da preferire a quello proposto da Nelson-Oppen anche nel caso la probabilità di insoddisfacibilità della formula sia elevata.
-L'euristica dei nodi vietati su Nelson-Oppen consente di terminare prima di DST ma a conti fatti il tempo risparmiato non è sufficiente da renderlo una valida alternativa.
+L'algoritmo di base NO presenta un andamento estremamente altalenante nonostante la sua complessità $O(e^2)$.
+La medesima versione con euristiche ha portato ad una stabilità quasi inaspettata trattandosi di migliorie che non abbassano il grado di complessità dell'algoritmo di partenza.
+L'algoritmo DST presenta invece una maggior stabilità in tutti i test, è quindi da preferire a quello NO+ anche nel caso in cui la probabilità di insoddisfacibilità della formula sia elevata.
+L'euristica dei nodi vietati su NO consente di terminare prima di DST ma a conti fatti il tempo risparmiato non è sufficiente da renderlo una valida alternativa.
 
 
 \begin{thebibliography}{1}
@@ -141,6 +143,10 @@ Aaron R. Bradley, Zohar Manna - Springer - \textit {The calculus of computation}
 P. J. Downey, R. Sethi, R. E. Tarjan - Variations on the common subexpression problem - 1980
 \bibitem{cyrluk-lincoln-shankar-1996}
 D. Cyrluk, P. Lincoln, N. Shankar - On Shostak's decision procedure for combinations of theories - 1996
+\bibitem{nieuweinhuis-oliveras-}
+R. Nieuwenhuis, A. Oliveras - Fast congruence closure and extensions - 2007
+\bibitem{marco-tamassia}
+Marco Tamassia - Implementazione di una procedura di soddisfacibilità per le liste
 \end{thebibliography}
 
 \end{document}

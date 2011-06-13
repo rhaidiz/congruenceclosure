@@ -53,6 +53,8 @@ public class JMainFrame extends JFrame {
    */
   private JResult jresult = null;
 
+  private JButton btn_exec;
+  
   /**
    * Costruttore della finestra principale.
    */
@@ -92,7 +94,7 @@ public class JMainFrame extends JFrame {
 		.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 	c.add(scrollPane);
 
-	JButton btn_exec = new JButton("Run");
+	 btn_exec = new JButton("Run");
 	btn_exec.setSize(70, 20);
 	btn_exec.setLocation(360, 290);
 	btn_exec.addActionListener(new ActionListener() {
@@ -114,6 +116,7 @@ public class JMainFrame extends JFrame {
   }
 
   private void loadFile() {
+	btn_exec.setEnabled(false);
 	/* Carica file formula esterno */
 	JFileChooser file_d = new JFileChooser();
 	file_d.showDialog(null, "Open file");
@@ -121,7 +124,7 @@ public class JMainFrame extends JFrame {
 	try {
 	  FileReader reader = new FileReader("" + f.getAbsolutePath());
 	  Scanner in = new Scanner(reader);
-
+	  input = new StringBuilder();
 	  while (in.hasNextLine())
 		input.append(in.nextLine());
 	  text_formula.setText(input.toString());
@@ -138,6 +141,7 @@ public class JMainFrame extends JFrame {
 	} catch (NullPointerException e) {
 
 	}
+	btn_exec.setEnabled(true);
   }
 
   private void saveFile() {
