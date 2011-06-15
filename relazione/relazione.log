@@ -1,8 +1,4 @@
-<<<<<<< .merge_file_042S7U
-This is pdfTeX, Version 3.1415926-1.40.11 (TeX Live 2010) (format=pdflatex 2011.6.2)  15 JUN 2011 14:02
-=======
-This is pdfTeX, Version 3.1415926-1.40.11 (TeX Live 2010) (format=pdflatex 2011.6.2)  15 JUN 2011 11:52
->>>>>>> .merge_file_iupHQO
+This is pdfTeX, Version 3.1415926-1.40.11 (TeX Live 2010) (format=pdflatex 2011.6.2)  15 JUN 2011 22:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -36,10 +32,16 @@ File: size11.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
 \belowcaptionskip=\skip42
 \bibindent=\dimen102
 )
+(/usr/local/texlive/2010/texmf-dist/tex/latex/tools/verbatim.sty
+Package: verbatim 2003/08/22 v1.5q LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks14
+\verbatim@line=\toks15
+\verbatim@in@stream=\read1
+)
 (/usr/local/texlive/2010/texmf-dist/tex/latex/base/inputenc.sty
 Package: inputenc 2008/03/30 v1.1d Input encoding file
-\inpenc@prehook=\toks14
-\inpenc@posthook=\toks15
+\inpenc@prehook=\toks16
+\inpenc@posthook=\toks17
 
 (/usr/local/texlive/2010/texmf-dist/tex/latex/base/utf8.def
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
@@ -271,11 +273,11 @@ Now handling font encoding LGR ...
 (/usr/local/texlive/2010/texmf-dist/tex/latex/listings/listings.sty
 (/usr/local/texlive/2010/texmf-dist/tex/latex/graphics/keyval.sty
 Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
-\KV@toks@=\toks16
+\KV@toks@=\toks18
 )
 \lst@mode=\count88
 \lst@gtempboxa=\box26
-\lst@token=\toks17
+\lst@token=\toks19
 \lst@length=\count89
 \lst@currlwidth=\dimen104
 \lst@column=\count90
@@ -303,96 +305,162 @@ Package: vmargin 2004/07/15 V2.5 set document margins (VK)
 Package: vmargin 2004/07/15 V2.5 set document margins (VK)
 \PaperWidth=\dimen108
 \PaperHeight=\dimen109
-) (./relazione.aux)
+) (/usr/local/texlive/2010/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2010/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2010/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/usr/local/texlive/2010/texmf-dist/tex/latex/latexconfig/graphics.cfg
+File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: pdftex.def on input line 91.
+
+(/usr/local/texlive/2010/texmf-dist/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2010/02/14 v0.04n Graphics/color for pdfTeX
+\Gread@gobject=\count96
+))
+\Gin@req@height=\dimen110
+\Gin@req@width=\dimen111
+)
+(./relazione.aux)
 \openout1 = `relazione.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 19.
-LaTeX Font Info:    ... okay on input line 19.
-LaTeX Font Info:    Checking defaults for LGR/cmr/m/n on input line 19.
-LaTeX Font Info:    Try loading font information for LGR+cmr on input line 19.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for LGR/cmr/m/n on input line 24.
+LaTeX Font Info:    Try loading font information for LGR+cmr on input line 24.
 
 (/usr/local/texlive/2010/texmf-dist/tex/generic/babel/lgrcmr.fd
 File: lgrcmr.fd 2008/06/17 v2.3 Greek Computer Modern
 )
-LaTeX Font Info:    ... okay on input line 19.
-\c@lstlisting=\count96
+LaTeX Font Info:    ... okay on input line 24.
+\c@lstlisting=\count97
+
+(/usr/local/texlive/2010/texmf-dist/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count98
+\scratchdimen=\dimen112
+\scratchbox=\box28
+\nofMPsegments=\count99
+\nofMParguments=\count100
+\everyMPshowfont=\toks20
+\MPscratchCnt=\count101
+\MPscratchDim=\dimen113
+\MPnumerator=\count102
+\everyMPtoPDFconversion=\toks21
+) (/usr/local/texlive/2010/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
+Package: pdftexcmds 2010/04/01 v0.9 Utility functions of pdfTeX for LuaTeX (HO)
+
+
+(/usr/local/texlive/2010/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/message (HO)
+)
+(/usr/local/texlive/2010/texmf-dist/tex/generic/oberdiek/ifluatex.sty
+Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+)
+(/usr/local/texlive/2010/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2010/04/26 v1.7 LaTeX kernel commands for general use (HO)
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+)
+(/usr/local/texlive/2010/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
+
+(/usr/local/texlive/2010/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2007/09/30 v1.0 Managing graphics extensions (HO)
+)
+(/usr/local/texlive/2010/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2010/02/22 v3.7 Keyval support for LaTeX options (HO)
+
+(/usr/local/texlive/2010/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty
+Package: kvsetkeys 2010/03/01 v1.9 Key value parser (HO)
+
+(/usr/local/texlive/2010/texmf-dist/tex/generic/oberdiek/etexcmds.sty
+Package: etexcmds 2010/01/28 v1.3 Prefix for e-TeX command names (HO)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+)))
+Package grfext Info: Graphics extension search list:
+(grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 436.
+
+(/usr/local/texlive/2010/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 22.
+(Font)              <12> on input line 27.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 22.
+(Font)              <8> on input line 27.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 22.
+(Font)              <6> on input line 27.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 32.
+(Font)              <9> on input line 37.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 32.
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 37.
+(Font)              <5> on input line 37.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 58.
 
 (/usr/local/texlive/2010/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <9> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 37.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 58.
  [1
 
-{/usr/local/texlive/2010/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
+{/usr/local/texlive/2010/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 124.
 
-<<<<<<< .merge_file_042S7U
-[2] [3] (./relazione.aux) ) 
-=======
-(./relazione.aux) ) 
->>>>>>> .merge_file_iupHQO
+<mixed.pdf, id=20, 542.99677pt x 257.2698pt>
+File: mixed.pdf Graphic file (type pdf)
+ <use mixed.pdf>
+<eqonly.pdf, id=21, 542.99677pt x 257.2698pt>
+File: eqonly.pdf Graphic file (type pdf)
+ <use eqonly.pdf> [3 <./mixed.pdf>] [4 <./eqonly.pdf>] (./relazione.aux) ) 
 Here is how much of TeX's memory you used:
- 2592 strings out of 493747
- 33466 string characters out of 3143547
- 92023 words of memory out of 3000000
- 5900 multiletter control sequences out of 15000+200000
- 9619 words of font info for 34 fonts, out of 3000000 for 9000
+ 3410 strings out of 493747
+ 47667 string characters out of 3143547
+ 111935 words of memory out of 3000000
+ 6660 multiletter control sequences out of 15000+200000
+ 10235 words of font info for 36 fonts, out of 3000000 for 9000
  714 hyphenation exceptions out of 8191
- 26i,6n,32p,461b,1214s stack positions out of 5000i,500n,10000p,200000b,50000s
-<<<<<<< .merge_file_042S7U
-</usr/local/texlive/2010/texmf-dist/fonts/type1/publ
-ic/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/publi
-c/amsfonts/cm/cmbx9.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/
-amsfonts/cm/cmmi6.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/am
-sfonts/cm/cmmi9.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmr10.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfon
-ts/cm/cmr12.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmr17.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmr6.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mr9.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
-9.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.
-pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pf
-b>
-Output written on relazione.pdf (3 pages, 149103 bytes).
-=======
-</usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfo
-nts/cm/cmbx12.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfon
-ts/cm/cmbx9.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmmi6.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmmi9.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/
-cmr10.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-r12.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmr1
-7.pfb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.p
-fb></usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb>
-</usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></
-usr/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb></us
-r/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
-Output written on relazione.pdf (3 pages, 147297 bytes).
->>>>>>> .merge_file_iupHQO
+ 37i,7n,32p,492b,219s stack positions out of 5000i,500n,10000p,200000b,50000s
+</usr
+/local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/
+local/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/lo
+cal/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/loca
+l/texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/
+texlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/te
+xlive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texl
+ive/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texliv
+e/2010/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2
+010/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/201
+0/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb></usr/local/texlive/2010/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
+Output written on relazione.pdf (4 pages, 166596 bytes).
 PDF statistics:
- 62 PDF objects out of 1000 (max. 8388607)
- 44 compressed objects within 1 object stream
+ 79 PDF objects out of 1000 (max. 8388607)
+ 55 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 11 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -3,15 +3,10 @@ package verifica;
 /**
  * Classe che mantiene la configurazione del programma.
  * 
- * @author demeof
+ * @author Federico De Meo
  * 
  */
 public class Config {
-
-  /**
-   * Numero di Test
-   */
-  public static int nTest = 1;
 
   /**
    * Algoritmo da utilizzare, default usa Book + speed

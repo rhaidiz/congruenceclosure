@@ -77,8 +77,8 @@ public class JMainFrame extends JFrame {
    */
   private void initComponents(Container c) {
 
-	JLabel label1 = new JLabel("Insert Formula:", JLabel.CENTER);
-	label1.setLocation(5, 5);
+	JLabel label1 = new JLabel("Formula:");
+	label1.setLocation(8, 5);
 	label1.setSize(100, 10);
 	c.add(label1);
 
@@ -94,9 +94,9 @@ public class JMainFrame extends JFrame {
 		.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 	c.add(scrollPane);
 
-	 btn_exec = new JButton("Run");
-	btn_exec.setSize(70, 20);
-	btn_exec.setLocation(360, 290);
+	 btn_exec = new JButton("Esegui");
+	btn_exec.setSize(90, 20);
+	btn_exec.setLocation(340, 290);
 	btn_exec.addActionListener(new ActionListener() {
 
 	  @Override
@@ -118,7 +118,7 @@ public class JMainFrame extends JFrame {
 	btn_exec.setEnabled(false);
 	/* Carica file formula esterno */
 	JFileChooser file_d = new JFileChooser();
-	file_d.showDialog(null, "Open file");
+	file_d.showDialog(null, "Apri file");
 	File f = file_d.getSelectedFile();
 	try {
 	  FileReader reader = new FileReader("" + f.getAbsolutePath());
@@ -132,7 +132,7 @@ public class JMainFrame extends JFrame {
 	  in.close();
 	} catch (FileNotFoundException e) {
 	  // TODO Auto-generated catch block
-	  System.out.print("ciao");
+	  System.out.print("File non trovato");
 	  // e.printStackTrace();
 	} catch (IOException e) {
 	  // TODO Auto-generated catch block
@@ -146,7 +146,7 @@ public class JMainFrame extends JFrame {
   private void saveFile() {
 	/* Salve file formula esterno */
 	JFileChooser file_d = new JFileChooser();
-	file_d.showDialog(null, "Save file");
+	file_d.showDialog(null, "Salva file");
 	try {
 	  File f = file_d.getSelectedFile();
 	  PrintWriter writer = new PrintWriter(f.getAbsoluteFile());
@@ -167,9 +167,9 @@ public class JMainFrame extends JFrame {
    */
   private void initMenuBar() {
 	JMenuBar jmenu = new JMenuBar();
-	JMenu jj = new JMenu("Options");
+	JMenu jj = new JMenu("Opzioni");
 	/* Opzione di caricamento formula */
-	JMenuItem load = new JMenuItem("Load..");
+	JMenuItem load = new JMenuItem("Carica file..");
 	load.addActionListener(new ActionListener() {
 
 	  @Override
@@ -183,7 +183,7 @@ public class JMainFrame extends JFrame {
 	});
 
 	/* Opzione di salvataggio formula */
-	JMenuItem save = new JMenuItem("Save formula as..");
+	JMenuItem save = new JMenuItem("Salva file..");
 	save.addActionListener(new ActionListener() {
 	  @Override
 	  public void actionPerformed(ActionEvent arg0) {
@@ -192,7 +192,7 @@ public class JMainFrame extends JFrame {
 	});
 
 	/* Lista degli algoritmi diponibili */
-	JMenu sub_menu = new JMenu("Algorithms");
+	JMenu sub_menu = new JMenu("Algoritmi");
 	ButtonGroup group = new ButtonGroup();
 	/* Algoritmo proposto dal libro */
 	JRadioButtonMenuItem algo1 = new JRadioButtonMenuItem("Nelson-Oppen");
@@ -218,7 +218,7 @@ public class JMainFrame extends JFrame {
 	});
 
 	/* Generatore automatico di formule */
-	JMenuItem formula_generator = new JMenuItem("Formula Generator");
+	JMenuItem formula_generator = new JMenuItem("Generatore di Formule");
 	formula_generator.addActionListener(new ActionListener() {
 
 	  @Override

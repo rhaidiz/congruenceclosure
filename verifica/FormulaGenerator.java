@@ -42,25 +42,29 @@ public class FormulaGenerator {
 	funArity[9] = 2;
 
 	for (int i = 0; i < equals; i++) {
-	  r.append(makeClaus(true) + ";");
+	  r.append(makeClaus(true) + "&");
 	  if(i == (equals/2)) r.append('\n'); 
 	}
-	r.append('\n');
+	
 	for (int i = 0; i < noEquals; i++) {
-	  r.append(makeClaus(false) + ";");
+	  r.append(makeClaus(false) + "&");
 	  if(i == (equals/2)) r.append('\n'); 
 	}
-	r.append('\n');
+	
 	for (int i = 0; i < atoms; i++) {
-	  r.append(makeAtom(true) + ";");
+	  r.append(makeAtom(true) + "&");
 	  if(i == (equals/2)) r.append('\n'); 
 	}
-	r.append('\n');
+	
 	for (int i = 0; i < natoms; i++) {
-	  r.append(makeAtom(false) + ";");
+	  r.append(makeAtom(false) + "&");
 	  if(i == (equals/2)) r.append('\n'); 
 	}
-
+	if(r.lastIndexOf("&") == r.length()-1)
+	  return (r.substring(0, r.length()-1));
+	if(r.lastIndexOf("&") == r.length()-2)
+	  return (r.substring(0, r.length()-2));
+	
 	return r.toString();
   }
 
@@ -68,7 +72,7 @@ public class FormulaGenerator {
 	if (t)
 	  return "atom(" + terms[random(0, terms.length - 1)] + ")";
 	else
-	  return "-atom(" + terms[random(0, terms.length - 1)] + ")";
+	  return "!atom(" + terms[random(0, terms.length - 1)] + ")";
   }
 
   private static String makeClaus(boolean type) {

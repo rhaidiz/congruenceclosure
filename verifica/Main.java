@@ -3,17 +3,12 @@ package verifica;
 import gui.JMainFrame;
 import gui.JResult;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Scanner;
 
 import javax.swing.JDialog;
@@ -58,15 +53,11 @@ public class Main {
    * Lista degli atoms da controllare
    * */
   private static ArrayList<Node> consfn;
+
   /**
-   * Conta il numero di merge fatte.
-   */
-  private static Integer merges = 0;
-  /**
-   * Metodo principale che avvia tutto il programma sia da GUI che da
-   * command-line.
+   * Metodo principale che avvia il programma nelle modalità: GUI o command-line.
    * 
-   * @param args
+   * @param args parametri della riga di comando
    * @throws ClassNotFoundException
    * @throws InstantiationException
    * @throws IllegalAccessException
@@ -78,7 +69,7 @@ public class Main {
 
 	if (args.length < 1) {
 	  System.out
-		  .println("Usage:\t cc.jar [-h heuristics] <File | Formula> \t(to execute from command line)\n\t cc.jar -gui \t\t(to execute from gui)");
+		  .println("Usage:\t cc.jar [-h heuristics] <File> \t(to execute from command line)\n\t cc.jar -gui \t\t(to execute from gui)");
 	  System.exit(-1);
 	}
 
@@ -97,6 +88,11 @@ public class Main {
 
   }
 
+  /**
+   * Metodo che esegue l'applicazione tramite la riga di comando.
+   * 
+   * @param file da cui leggere la formula
+   */
   private static void commandLine(String file) {
 	StringBuilder input = new StringBuilder();
 	try {
@@ -109,7 +105,7 @@ public class Main {
 	  in.close();
 	} catch (FileNotFoundException e) {
 	  /* se non è un file forse è una formula */
-	  input.append(file);
+	  System.out.println("File non trovato: " + file);
 	} catch (IOException e) {
 	  // TODO Auto-generated catch block
 	  e.printStackTrace();
@@ -117,45 +113,32 @@ public class Main {
 	}
 
 	long tempo = 0;
-	int nTest = Config.nTest;
 	boolean result = false;
 	long inizio = System.currentTimeMillis();
 	try {
 	  result = execCC(input.toString(), null);
 	} catch (ParseException e) {
-	  System.out.print("Syntax Error");
+	  System.out.print("Errore di sintatti.");
 	  e.printStackTrace();
 	  System.exit(-1);
 	} catch (Throwable e) {
 	  result = false;
-	  //e.printStackTrace();
+	  // e.printStackTrace();
 	}
 	long fine = System.currentTimeMillis();
 	tempo += (fine - inizio);
-	int tCorrS = (int) tempo / nTest;
-	
+
 	System.out.print(Graph.size());
 	int edges = 0;
-	for(Node n: Graph.values()){
+	for (Node n : Graph.values()) {
 	  edges += n.getArgs().size();
 	}
-	System.out.print(";"+edges);
+	System.out.print(";" + edges);
 	if (result)
 	  System.out.print(";Soddisfacibile;");
 	else
 	  System.out.print(";Non Soddisfacibile;");
-	System.out.println(tCorrS);
-
-	/* esporta le classi di congruenza */
-//	try {
-//	  PrintWriter writer = new PrintWriter("/Users/demeof/Desktop/Verifica/congruence_classes.txt");
-//	  writer.print(exportCC());
-//	  writer.close();
-//	} catch (FileNotFoundException e) {
-//	  // TODO Auto-generated catch block
-//	  e.printStackTrace();
-//	}
-//	System.out.print("stampato");
+	System.out.println(tempo);
   }
 
   private static void execGui() {
@@ -180,7 +163,6 @@ public class Main {
 	}
 
 	// avvia l'interfaccia
-
 	SwingUtilities.invokeLater(new Runnable() {
 
 	  @Override
@@ -189,7 +171,6 @@ public class Main {
 	  }
 	});
   }
-
 
   /**
    * Metodo che esegue l'algoritmo di chiusura di congruenza.
@@ -200,18 +181,22 @@ public class Main {
    */
   public static boolean execCC(String formula, JResult window)
 	  throws ParseException {
+	/* Siccome è possibile chiamare più volte execCC() tramite GUI, resetto le strutture dati */
 	Graph = new HashMap<String, Node>();
 	equals = new ArrayList<Node>();
 	noEquals = new ArrayList<Node>();
 	consList = new ArrayList<Node>();
 	atoms = new ArrayList<Node>();
 	consfn = new ArrayList<Node>();
-	merges = 0;
+
 	new Parser(formula, Graph, equals, noEquals, consList, atoms, consfn);
-	//System.out.println("---");
 	// Dopo il parser, setto il risultato nella finestra jResult se ho la GUI
-	if( window != null ){
-	  window.setParsingResult(Graph.size());
+	if (window != null) {
+	  int edges = 0;
+		for (Node n : Graph.values()) {
+		  edges += n.getArgs().size();
+		}
+	  window.setParsingResult(Graph.size(),edges);
 	}
 	switch (Config.algorithm) {
 	case 0:
@@ -219,7 +204,6 @@ public class Main {
 		return NelsonOppenSpeedUp();
 	  } catch (Exception e) {
 		// Se raccolgo l'eccezione significa che la formula è insoddisfacibile
-		//e.printStackTrace();
 		return false;
 	  }
 	case 1:
@@ -228,8 +212,6 @@ public class Main {
 	return true;
   }
 
-
-  
   /**
    * Metodo che esegue l'algoritmo del libro e applica le seguenti euristiche:
    * compressione dei cammini, unione per rango, decisione di insoddisfacibilità
@@ -271,9 +253,6 @@ public class Main {
 	return result;
   }
 
-
-  
-  
   /* METODI DI SUPPORTO CON EURISTICHE */
 
   /**
@@ -300,7 +279,6 @@ public class Main {
    * @throws Exception nel caso in cui due nodi non possano essere uniti.
    */
   private static void unionH(Node id1, Node id2) throws Exception {
-	// System.out.println("Inizio node");
 	Node n1 = findH(id1);
 	Node n2 = findH(id2);
 	if (n1.getRank() > n2.getRank())
@@ -310,19 +288,17 @@ public class Main {
 	  if (n1.getRank() == n2.getRank())
 		n2.setRank(n2.getRank() + 1);
 	}
-	// System.out.println("Fine link");
   }
 
   private static void link(Node n1, Node n2) {
 	/* n1 diventa rappresentante */
 	n2.setFind(n1.getFind());
-	// System.out.println("Faccio forbidden");
+
 	n1.getCcparent().addAll(n2.getCcparent());
 	n2.setCcparent(new HashSet<Node>());
 
 	n1.getForbidden().addAll(n2.getForbidden());
 	n2.setForbidden(new HashSet<Node>());
-	// System.out.println("Faccio merge");
 
   }
 
@@ -345,7 +321,6 @@ public class Main {
    * @return <pre>true</pre> se i due nodi sono congruenti,<pre>false</pre> altrimenti
    */
   private static boolean congruentH(Node id1, Node id2) {
-
 	if (id1.getFun().equals(id2.getFun())) {
 	  ArrayList<Node> arg1 = id1.getArgs();
 	  ArrayList<Node> arg2 = id2.getArgs();
@@ -355,7 +330,6 @@ public class Main {
 			return false;
 	  }
 	  return true;
-
 	}
 	return false;
   }
@@ -370,29 +344,24 @@ public class Main {
   private static void mergeH(Node id1, Node id2) throws Exception {
 	Node find1 = findH(id1);
 	Node find2 = findH(id2);
-	
+
 	if (!findH(id1).equals(findH(id2))) {
 	  if (findH(id1).getForbidden().contains(id2))
-		throw new Exception("Insod");
-	  
+		throw new Exception("Non soddisfacibile");
+
 	  /* Euristica dei forbidden */
 	  for (Node forb : find1.getForbidden()) {
 		if (findH(forb).equals(find2)) {
-		  //System.out.println("euristica 1: ["+find1+"]"+forb+" - "+find2);
-		  throw new Exception("Non soddisfacibile");
-		}
-	  }
-	  
-	  for (Node forb : find2.getForbidden()) {
-		if (findH(forb).equals(find1)) {
-		  //System.out.println("euristica 2: ["+find2+"]"+forb+" - "+find1);
 		  throw new Exception("Non soddisfacibile");
 		}
 	  }
 
-	  /* conto il numero di merge fatte */
-	  merges++;
-	  
+	  for (Node forb : find2.getForbidden()) {
+		if (findH(forb).equals(find1)) {
+		  throw new Exception("Non soddisfacibile");
+		}
+	  }
+
 	  /* Salvo i ccparent per propagare l'assioma di congruenza */
 	  Object[] AP1 = ccparentH(id1).toArray();
 	  Object[] AP2 = ccparentH(id2).toArray();
@@ -400,7 +369,7 @@ public class Main {
 	  unionH(id1, id2); /* Faccio la UNION */
 
 	  for (int i = 0; i < AP1.length; i++) {
-		Node p1 = (Node)AP1[i];
+		Node p1 = (Node) AP1[i];
 		for (int j = 0; j < AP2.length; j++) {
 		  Node p2 = (Node) AP2[j];
 		  if (!findH(p1).equals(findH(p2)) && congruentH(p1, p2))
@@ -440,7 +409,7 @@ public class Main {
 	}
 	return true;
   }
-  
+
   /* METODI SENZA EURISTICHE */
   /**
    * Metodo che restituisce il rappresentante della classe a cui appartiene il
@@ -459,10 +428,8 @@ public class Main {
    * @param id2 secondo nodo da unire
    */
   private static void _union(Node id1, Node id2) {
-
 	Node n1 = _find(id1);
 	Node n2 = _find(id2);
-	// System.out.println("UNION: \t\t" + n1 + " -- " + n2);
 	n1.setFind(n2.getFind());
 	n2.getCcparent().addAll(n1.getCcparent());
 	n1.setCcparent(new HashSet<Node>());
@@ -491,7 +458,6 @@ public class Main {
 			return false;
 	  }
 	  return true;
-
 	}
 	return false;
   }
@@ -507,9 +473,6 @@ public class Main {
 	if (!_find(id1).equals(_find(id2))) {
 	  HashSet<Node> P1 = _ccparent(id1);
 	  HashSet<Node> P2 = _ccparent(id2);
-
-	  /* conto il numero di merge fatte */
-	  merges++;
 
 	  Object[] AP1 = P1.toArray();
 	  Object[] AP2 = P2.toArray();
@@ -551,5 +514,5 @@ public class Main {
 	}
 	return true;
   }
-  
+
 }

@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -37,7 +38,7 @@ public class JResult extends JFrame implements WindowListener {
   private String f;
 
   public JResult() {
-	setTitle("Running...");
+	setTitle("Esecuzione...");
 	setSize(240, 150);
 	setLocationRelativeTo(null);
 	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -59,18 +60,18 @@ public class JResult extends JFrame implements WindowListener {
 
   private void initComponents(Container c) {
 
-	/* Inizializzazione dei JLabel statici */
+	/* Inizializzazione dei JLabel */
 	label_parser.setText("Parsing...");
 	label_parser.setSize(120, 20);
 	label_parser.setLocation(10, 10);
-	label_graph_dimension.setText("Graph Dimension: ");
+	label_graph_dimension.setText("Grafo: ");
 	label_graph_dimension.setSize(200, 20);
 	label_graph_dimension.setLocation(10, 30);
-	label_extime.setText("Execution time:");
+	label_extime.setText("Tempo:");
 	label_extime.setSize(220, 20);
 	label_extime.setLocation(10, 50);
 
-	label_sodd.setSize(120, 20);
+	label_sodd.setSize(190, 20);
 	label_sodd.setLocation(10, 70);
 
 	/* Aggiunta dei JLabel */
@@ -91,24 +92,29 @@ public class JResult extends JFrame implements WindowListener {
 	  boolean sod = Main.execCC(formula, jr);
 	  if (sod) {
 		label_sodd.setText("Soddisfacibile");
+		label_sodd.setForeground(Color.green.darker());
 	  } else {
 		label_sodd.setText("Non Soddisfacibile");
+		label_sodd.setForeground(Color.RED);
 	  }
 	} catch (ParseException e) {
 	  label_sodd.setText("Syntax error");
+	  label_sodd.setForeground(Color.RED);
 	  e.printStackTrace();
 	} catch (TokenMgrError e) {
 	  label_sodd.setText("Syntax error");
+	  label_sodd.setForeground(Color.RED);
 	  e.printStackTrace();
 	} catch (Exception e) {
 	  // Insoddisfacibile
 	  label_sodd.setText("Non Soddisfacibile");
+	  label_sodd.setForeground(Color.RED);
 	  e.printStackTrace();
 	}
 	long fine = System.currentTimeMillis();
 	tempo += (fine - inizio);
-	setTitle("Finish");
-	label_extime.setText("Execution time: " + (tempo / 1000) + "s");
+	setTitle("Fine!");
+	label_extime.setText("Tempo: " + (tempo ) + "ms");
 
   }
 
@@ -117,9 +123,9 @@ public class JResult extends JFrame implements WindowListener {
    * 
    * @param graphDim dimensione del grafo
    */
-  public void setParsingResult(int graphDim) {
-	label_parser.setText("Parsing...DONE!");
-	label_graph_dimension.setText("Graph Dimension: "+graphDim);
+  public void setParsingResult(int nodi,int archi) {
+	label_parser.setText("Parsing...FINE!");
+	label_graph_dimension.setText("Grafo: nodi:"+nodi+", archi:"+archi);
   }
 
   public void setFormula(String formula){
@@ -129,13 +135,6 @@ public class JResult extends JFrame implements WindowListener {
   @Override
   public void windowActivated(WindowEvent arg0) {
 	// TODO Auto-generated method stub
-//	setTitle("Running...");
-//	new Thread(new Runnable() {
-//	  public void run() {
-//		runAlgorithm(f);
-//	  }
-//	}).start();
-	//f = formula;
   }
 
   @Override

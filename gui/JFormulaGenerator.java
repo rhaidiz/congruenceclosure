@@ -58,7 +58,7 @@ public class JFormulaGenerator extends JFrame{
   private final JButton btn_generate = new JButton();
   
   public JFormulaGenerator(JTextArea formula){
-	setTitle("Formula Generator");
+	setTitle("Generatore di Formule");
 	setSize(200,200);
 	setLocationRelativeTo(null);
 	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -73,16 +73,16 @@ public class JFormulaGenerator extends JFrame{
   private void initComponents(Container c){
 	/* Inizializzazione dei label */
 	label_eq.setText("# Equals:");
-	label_eq.setSize(70,20);
+	label_eq.setSize(80,20);
 	label_eq.setLocation(10, 20);
 	label_neq.setText("# No equals:");
-	label_neq.setSize(80,20);
+	label_neq.setSize(90,20);
 	label_neq.setLocation(10, 45);
 	label_atom.setText("# Atom:");
 	label_atom.setSize(70,20);
 	label_atom.setLocation(10, 70);
 	label_natom.setText("# No atom:");
-	label_natom.setSize(70,20);
+	label_natom.setSize(90,20);
 	label_natom.setLocation(10, 95);
 	
 	/* Inizializzazione delle text area */
@@ -100,15 +100,15 @@ public class JFormulaGenerator extends JFrame{
 	text_natom.setText("10");
 	
 	/* Inizializzazione del bottone */
-	btn_generate.setText("Generate Formula");
+	btn_generate.setText("Genera Formula");
 	btn_generate.setLocation(20, 140);
 	btn_generate.setSize(150, 20);
 	btn_generate.addActionListener(new ActionListener() {
 	  
 	  @Override
 	  public void actionPerformed(ActionEvent arg0) {
-		// Setta la formula e chiudi questa finestra
-		int eq=1, neq=1, atom=1, natom =1;
+		/* I valori di default sono a 1 */
+		int eq = 1, neq = 1, atom = 1, natom = 1;
 		try{
 		 eq = Integer.parseInt(text_eq.getText());
 		 neq = Integer.parseInt(text_neq.getText());

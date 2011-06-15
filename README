@@ -1,5 +1,34 @@
-Per eseguire il progetto da riga di comando:
-$java -jar cc.jar [-h heuristics] <File | Formula>
+************************************************
+        _______ _______   _____ _______  ______
+ |      |       |           |   |_____| |_____/
+ |_____ |_____  |_____  . __|   |     | |    \_
+ autore: Federico De Meo
+************************************************
 
-Per eseguire l'interfaccia grafica:
-$java -jar cc.jar -gui
+ESECUZIONE
+-----------
+Per eseguire il progetto da riga di comando:
+$java -jar [-Xmx1g] lcc.jar [-h heuristics] <pathToFile>
+
+Per eseguire il progetto da interfaccia grafica:
+$java -jar [-Xmx1g] lcc.jar -gui
+
+La flag -Xmx1g serve per aumentare la memoria a disposizione della JVM.
+Questa flag serve solo in caso si cerchi di computare formule molto grandi
+e previene un errore di tipo java.lang.OutOfMemoryError 
+
+Per eseguire l'algoritmo si può utilizzare lo script eseguitest.sh:
+$./eseguitest.sh CARTELLA FILE.csv [-h heuristics]
+
+che carica tutte le formule in CARTELLA e riporta i risultati in FILE.csv
+
+
+OUTPUT
+-----------
+Il formato di output per l'esecuzione tramite riga di comando è nel formato CSV:
+NODI;ARCHI;RESULT;TEMPO
+
+NODI: numero di archi;
+ARCHI: numero di nodi;
+RESULT: risultato computazione (Soddisfacibile o Non Soddisfacibile)
+TEMPO: tempo impiegato, compresa la fase di parsing, espressa in millisecondi

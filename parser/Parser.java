@@ -31,17 +31,15 @@ public class Parser implements ParserConstants {
       this.inc = 1;
       this.checkArity = new HashMap();
       this.nonatom = new HashSet();
-      //System.out.println("-..");      if( input.charAt(input.length()-1) == ';')
+      if( input.charAt(input.length()-1) == ';')
         input = input.substring(0,input.length()-1);
-
-      //System.out.println("-"+input);      /* Misuro tempo parser */
+      /* Misuro tempo parser */
       long tempo = 0;
-      int nTest = Config.nTest;
       long inizio = System.currentTimeMillis();
       new Parser(new java.io.StringReader(input)).S();
       long fine = System.currentTimeMillis();
       tempo += (fine - inizio);
-        double tCorrS = (double) tempo / nTest;
+
 
       /* reset delle strutture dati di supporto */
       this.gg = 1;
