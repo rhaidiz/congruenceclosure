@@ -23,15 +23,15 @@ public class Node {
   /**
    * Lista argomenti
    */
-  private ArrayList<String> args = new ArrayList<String>();
+  private ArrayList<Node> args = new ArrayList<Node>();
   /**
    * Campo Find
    */
-  private String find = "";
+  private Node find = null;
   /**
    * Lista padri
    */
-  private HashSet<String> ccparent = new HashSet<String>();
+  private HashSet<Node> ccparent = new HashSet<Node>();
   /**
    * Rango
    */
@@ -39,7 +39,7 @@ public class Node {
   /**
    * Insieme dei nodi proibiti
    */
-  private HashSet<String> forbidden = new HashSet<String>();
+  private HashSet<Node> forbidden = new HashSet<Node>();
 
   /**
    * Costruttore semplice che costruisce un nodo e gli assegna un
@@ -50,7 +50,7 @@ public class Node {
    */
   public Node(String id) {
 	_id = id;
-	find = id;
+	find = this;
   }
 
   /**
@@ -63,9 +63,9 @@ public class Node {
    * @param args
    *          lista di argomenti della funzione
    */
-  public Node(String id, String fn, ArrayList<String> args) {
+  public Node(String id, String fn, ArrayList<Node> args) {
 	_id = id;
-	find = id;
+	find = this;
 	_fn = fn;
 	this.args = args;
   }
@@ -102,7 +102,7 @@ public class Node {
    *  
    *  @return lista degli argomenti delle funzione
    */
-  public ArrayList<String> getArgs() {
+  public ArrayList<Node> getArgs() {
 	return args;
   }
 
@@ -111,7 +111,7 @@ public class Node {
    *  
    *  @param id nuovo identificatore per il campo find
    */
-  public void setFind(String id) {
+  public void setFind(Node id) {
 	this.find = id;
   }
 
@@ -120,7 +120,7 @@ public class Node {
    *  
    *  @return String valore di find del nodo
    */
-  public String getFind() {
+  public Node getFind() {
 	return find;
   }
 
@@ -129,7 +129,7 @@ public class Node {
    *  
    *  @param insieme dei padri del nodo
    */
-  public void setCcparent(HashSet<String> ccparent) {
+  public void setCcparent(HashSet<Node> ccparent) {
 	this.ccparent = ccparent;
   }
 
@@ -138,7 +138,7 @@ public class Node {
    *  
    *  @param parent padre da aggiungere
    */
-  public void appendParent(String parent) {
+  public void appendParent(Node parent) {
 	ccparent.add(parent);
   }
 
@@ -147,7 +147,7 @@ public class Node {
    *  
    *  @return insieme dei padri del nodo
    */
-  public HashSet<String> getCcparent() {
+  public HashSet<Node> getCcparent() {
 	return ccparent;
   }
 
@@ -174,7 +174,7 @@ public class Node {
    *  
    *  @param id identificatore del nodo proibito 
    */
-  public void addForbidden(String id) {
+  public void addForbidden(Node id) {
 	forbidden.add(id);
   }
 
@@ -192,7 +192,7 @@ public class Node {
    * 
    * @return nodi foribidden
    */
-  public HashSet<String> getForbidden(){
+  public HashSet<Node> getForbidden(){
 	return forbidden;
   }
   
@@ -201,7 +201,7 @@ public class Node {
    * 
    * @param forbs la nuova lista forbidden
    */
-  public void setForbidden(HashSet<String> forbs){
+  public void setForbidden(HashSet<Node> forbs){
 	forbidden = forbs;
   }
   /**
@@ -209,14 +209,13 @@ public class Node {
    * 
    * @param forbs l'insieme dei forbidden da unire con l'attuale
    */
-  public void mergeForbidden(HashSet<String> forbs){
+  public void mergeForbidden(HashSet<Node> forbs){
 	this.forbidden.addAll(forbs);
   }
   /**
    * @see Object#toString
    */
   public String toString() {
-	return "id: "+_id+"fun:"+_fn + "\n\tccparent:" + ccparent + "\n\tfind:[" + find
-		+ "]\n\targs:" + args + "\n\tforbidden:" + forbidden + "\n";
+	return "id: "+_id;
   }
 }

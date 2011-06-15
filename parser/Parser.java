@@ -109,14 +109,14 @@ public class Parser implements ParserConstants {
       R = T();
           if(swi.image.equals("="))
           {
-            equals.add(L.getId());
-            equals.add(R.getId());
+            equals.add(L);
+            equals.add(R);
           }else
           {
-            noEquals.add(L.getId());
-        noEquals.add(R.getId());
-        L.addForbidden(R.getId());
-        R.addForbidden(L.getId());
+            noEquals.add(L);
+        noEquals.add(R);
+        L.addForbidden(R);
+        R.addForbidden(L);
           }
       break;
     case 13:
@@ -124,7 +124,7 @@ public class Parser implements ParserConstants {
       jj_consume_token(6);
       L = T();
       jj_consume_token(7);
-      atoms.add(L.getId());
+      atoms.add(L);
       break;
     case 17:
       jj_consume_token(17);
@@ -133,43 +133,47 @@ public class Parser implements ParserConstants {
       jj_consume_token(7);
       if(!nonatom.contains("-atom("+L.getId()+")"))
       {
-        //System.out.println("-atom("+L.getId()+")");
         nonatom.add("-atom("+L.getId()+")");
         String consKey = "cons(f_"+inc+","+"ff_"+inc+")";
 
-        /* lo metto nella lista dei cons da controllare */
-        consfn.add(consKey);
         ArrayList argCons = new ArrayList();
+
+        Node t1;
+        Graph.put("f_"+inc,t1 = new Node("f_"+inc));
+        argCons.add(t1);
+
+        Node t2;
+        Graph.put("ff_"+inc,t2 = new Node("ff_"+inc));
+        argCons.add(t2);
+
+        Node nodeCons;
+        Graph.put(consKey,nodeCons = new Node(consKey,"cons",argCons));
+
+        t1.appendParent(nodeCons);
+        t2.appendParent(nodeCons);
+
+        consfn.add(nodeCons);
+
         ArrayList args = new ArrayList();
-        /* Aggiungo gli argomenti dei cons */
-        argCons.add("f_"+inc);
-        argCons.add("ff_"+inc);
-        Node tt;
-        Graph.put("f_"+inc,tt = new Node("f_"+inc));
-        tt.appendParent(consKey);
-        Graph.put("ff_"+inc,tt = new Node("ff_"+inc));
-        tt.appendParent(consKey);
+        args.add(nodeCons);
 
-        Node tmp;
-        Graph.put(consKey,tmp = new Node(consKey,"cons",argCons));
-        tmp.appendParent("car("+consKey+")");
-        tmp.appendParent("cdr("+consKey+")");
+        Node car;
+        Node cdr;
+        Graph.put("car("+consKey+")", car = new Node("car("+consKey+")","car",args));
+        Graph.put("cdr("+consKey+")", cdr = new Node("cdr("+consKey+")","cdr",args));
 
-        args.add(consKey);
+        nodeCons.appendParent(car);
+        nodeCons.appendParent(cdr);
 
-        Graph.put("car("+consKey+")", new Node("car("+consKey+")","car",args));
-        Graph.put("cdr("+consKey+")", new Node("cdr("+consKey+")","cdr",args));
 
-        cons.add("car("+consKey+")");
-        cons.add("f_"+inc);
-        cons.add("cdr("+consKey+")");
-        cons.add("ff_"+inc);
+        cons.add(car);
+        cons.add(t1);
+        cons.add(cdr);
+        cons.add(t2);
         //System.out.println("--"+inc);
-        equals.add(L.getId());
-        equals.add(consKey);
+        equals.add(L);
+        equals.add(nodeCons);
         inc++;
-
-
       }
       break;
     default:
@@ -198,11 +202,9 @@ public class Parser implements ParserConstants {
       u = T();
       jj_consume_token(7);
                 myKey = "cons("+v.getId()+","+u.getId()+")";
-                // Aggiungo il mio identificatore nella lista dei padri dei miei due figli
-                v.appendParent(myKey);
-                u.appendParent(myKey);
+
                 // Aggiungo questo cons nella lista dei cons da controllare per soddisfacibilità
-                consfn.add(myKey);
+
                 // Adesso devo aggiungere questo nodo nel grafo (prima controllo se già esiste)
                 if(Graph.containsKey(myKey))
                         tmp = (Node)Graph.get(myKey);
@@ -211,25 +213,30 @@ public class Parser implements ParserConstants {
                         ArrayList args = new ArrayList();
 
             /* Aggiungo il nodo cons nel grafo con i suoi argomenti */
-                        argCons.add(v.getId());
-                        argCons.add(u.getId());
+                        argCons.add(v);
+                        argCons.add(u);
                         Graph.put(myKey,tmp = new Node(myKey,"cons",argCons));
-                        /* Aggiungo nella mia lista i due padri car e cdr */
-                        tmp.appendParent("car("+myKey+")");
-                        tmp.appendParent("cdr("+myKey+")");
+
             /* Aggiungo i nodi di car e cdr associato al nodo cons */
-                        args.add(myKey);
-                        Graph.put("car("+myKey+")", new Node("car("+myKey+")","car",args));
-                        Graph.put("cdr("+myKey+")", new Node("cdr("+myKey+")","cdr",args));
+                        args.add(tmp);
+                        Node t1,t2;
+                        Graph.put("car("+myKey+")",  t1 = new Node("car("+myKey+")","car",args));
+                        Graph.put("cdr("+myKey+")",  t2 = new Node("cdr("+myKey+")","cdr",args));
+
+            /* Aggiungo nella mia lista i due padri car e cdr */
+            tmp.appendParent(t1);
+            tmp.appendParent(t2);
 
                         /* Aggiungo nella lista dei cons i nodi che dovranno essere "mergati" */
-                        cons.add("car("+myKey+")");
-                        cons.add(v.getId());
-                        cons.add("cdr("+myKey+")");
-            cons.add(u.getId());
+                        cons.add(t1);
+                        cons.add(v);
+                        cons.add(t1);
+            cons.add(u);
                 }
 
-
+                v.appendParent(tmp);
+        u.appendParent(tmp);
+        consfn.add(tmp);
                 {if (true) return tmp;}
       break;
     case 10:
@@ -238,17 +245,19 @@ public class Parser implements ParserConstants {
       v = T();
       jj_consume_token(7);
                 myKey = "car("+v.getId()+")";
-                // Aggiungo il mio identificatore nella lista dei padri dei miei due figli
-                v.appendParent(myKey);
+
 
                 // Adesso devo aggiungere questo nodo nel grafo (prima controllo se già esiste)
                 if(Graph.containsKey(myKey))
                         tmp = (Node)Graph.get(myKey);
                 else{
                         ArrayList args = new ArrayList();
-                        args.add(v.getId());
+                        args.add(v);
                         Graph.put(myKey,tmp = new Node(myKey,"car",args));
                 }
+        // Aggiungo il mio identificatore nella lista dei padri dei miei due figli
+        v.appendParent(tmp);
+
                 {if (true) return tmp;}
       break;
     case 11:
@@ -257,17 +266,18 @@ public class Parser implements ParserConstants {
       v = T();
       jj_consume_token(7);
                 myKey = "cdr("+v.getId()+")";
-                // Aggiungo il mio identificatore nella lista dei padri dei miei due figli
-                v.appendParent(myKey);
+
 
                 // Adesso devo aggiungere questo nodo nel grafo (prima controllo se già esiste)
                 if(Graph.containsKey(myKey))
                         tmp = (Node)Graph.get(myKey);
                 else{
                         ArrayList args = new ArrayList();
-                        args.add(v.getId());
+                        args.add(v);
                         Graph.put(myKey,tmp = new Node(myKey,"cdr",args));
                 }
+                // Aggiungo il mio identificatore nella lista dei padri dei miei due figli
+        v.appendParent(tmp);
                 {if (true) return tmp;}
       break;
     case FUN:
@@ -286,7 +296,7 @@ public class Parser implements ParserConstants {
         }
         jj_consume_token(14);
         u = T();
-                                       myArgs=myArgs+","+u.getId();argFun.add(u.getId());argsl++;
+                                       myArgs=myArgs+","+u.getId();argFun.add(u);argsl++;
       }
       jj_consume_token(7);
                 argsl++; /* Mi mantiene il numero di argomenti della funzione */
@@ -307,23 +317,25 @@ public class Parser implements ParserConstants {
                 /* Se arrivo qui significa che è andato tutto bene e posso aggiungere */
                 myKey=fun.image+"("+v.getId()+myArgs+")";
         //System.out.println("myKey fun "+myKey);
-                argFun.add(v.getId()); /* aggiungo l'ultimo argomento alla lista dei parametri */
+                argFun.add(v); /* aggiungo l'ultimo argomento alla lista dei parametri */
+
+        if(!Graph.containsKey(myKey))
+          Graph.put(myKey,tmp = new Node(myKey,fun.image,argFun));
+        else
+            tmp = (Node)Graph.get(myKey);
 
                 /* Aggiungo il padre a tutti i figli */
                 Iterator i = argFun.iterator();
                 String ss;
                 while(i.hasNext()){
-                        Node temp = (Node)(Graph.get((String)i.next()));
-                        temp.appendParent(myKey);
+                        Node temp = (Node)(i.next());
+                        temp.appendParent(tmp);
                 }
         /* Devo controllare se la funzione già essite per evitare di sovrascriverla
          * può causare problemi in caso di funzioni annidate
          * F(F(a))=a;F(a)!=a
          */
-        if(!Graph.containsKey(myKey))
-                  Graph.put(myKey,tmp = new Node(myKey,fun.image,argFun));
-                else
-                    tmp = (Node)Graph.get(myKey);
+
                 {if (true) return tmp;}
       break;
     case ALPHA:

@@ -37,7 +37,7 @@ public interface ParserConstants {
     "\",\"",
     "<ALPHA>",
     "<FUN>",
-    "\"-atom\"",
+    "\"!atom\"",
   };
 
 }

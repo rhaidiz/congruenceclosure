@@ -61,27 +61,20 @@ dove {\tt formula} è la formula di cui verificare la soddisfacibilità e {\tt w
 Nella prima fase di esecuzione viene chiamato il Parser, al quale vengono passate, oltre alla stringa in input, diverse strutture dati di supporto:
 \begin{itemize}
 	\item Graph: {\tt HashMap} che mantiene la struttura del grafo;
-	\item equals: {\tt ArrayList} che mantiene le chiavi dei letterali uguali;
-	\item noEquals: {\tt ArrayList} che mantiene le chiavi dei letterali diversi;
-	\item consList: {\tt ArrayList} che mantiene le chiavi dei {\tt car()} e {\tt cdr()} degli operatori {\tt cons()} di cui fare la prima serie di {\tt MERGE};
-	\item atoms: {\tt ArrayList} che mantiene le chiavi degli {\tt atom()};
-	\item consfn: {\tt ArrayList} che mantiene le chiavi dei {\tt cons()} che non dovranno appartenere alla struttura atoms; 
+	\item equals: {\tt ArrayList} che mantiene i node dei letterali uguali;
+	\item noEquals: {\tt ArrayList} che mantiene i nodi dei letterali diversi;
+	\item consList: {\tt ArrayList} che mantiene i nodi dei {\tt car()} e {\tt cdr()} degli operatori {\tt cons()} di cui fare la prima serie di {\tt MERGE};
+	\item atoms: {\tt ArrayList} che mantiene i nodi {\tt atom()};
+	\item consfn: {\tt ArrayList} che mantiene i nodi {\tt cons()} che NON devono essere atoms; 
 \end{itemize}
-Si noti una particolarità: le strutture {\tt equals}, {\tt noEquals} e {\tt consList} rappresentano logicamente coppie di chiavi che devono essere usate per effettuare le {\tt MERGE}.
+Si noti una particolarità: le strutture {\tt equals}, {\tt noEquals} e {\tt consList} rappresentano logicamente coppie di nodi che devono essere usate per effettuare le {\tt MERGE}.
 La struttura {\tt ArrayList}, però, non gestisce coppie bensì singoli elementi in successione.
 Si è ugualmente scelta questa struttura avendo cura di riempirla in modo che un elemento in posizione pari sia in relazione con il successivo elemento dispari. $(2i \sim 2i+1)$
-\subsection{Chiavi}
-Per meglio identificare ogni elemento all'interno delle strutture dati di appoggio si è scelto di utilizzare una stringa come chiave univoca di un nodo.
-I caratteri che formano la stringa sono gli stessi che compongono un termine nella formula. Ad esempio:
-\begin{center}
-$F : car(x) = cdr(y) \wedge x = y $
-\end{center}
-genererà un grafo con 4 nodi le cui chiavi saranno le stringhe: $car(x),cdr(y),x,y$, ognuna delle quali identifica un nodo.
-
-Questo consente una facile gestione logica dei nodi unito ad una notevole velocità di accesso ai nodi stessi grazie all'uso della struttura {\tt HashMap}.
-
+\subsection{Gestione dei nodi}
+In ogni struttura dati usata nell'algoritmo, si è deciso di memorizzare un oggetto {\tt Node} che riferisce direttamente al nodo.
+Si noti che questa scelta è stata preferita a quella di utilizzare delle chiavi, in quanto, a seguito di diversi test, la gestione delle chiavi, se pur tramite strutture Hash, comportava un considerevole aumento dei tempi di computazione.
 \subsection{Algoritmo}
-Dopo la fase di parsing viene chiamato uno dei due metodi {\tt NelsonOppenSpeedUp(String formula)} o {\tt NelsonOppen(String formula)} che rispettivamente eseguono l'algoritmo con e senza euristiche.
+Dopo la fase di parsing viene chiamato uno dei due metodi {\tt NelsonOppenSpeedUp()} o {\tt NelsonOppen()} che rispettivamente eseguono l'algoritmo con e senza euristiche.
 Non mi soffermerò sulla specifica dell'algoritmo privo di euristiche in quanto ampiamente descritto sul testo di riferimento nel Capitolo 9 (pag. 251-258).
 
 \subsection{Euristiche}
@@ -90,14 +83,14 @@ Al fine di migliorare le prestazioni dell'algoritmo di Nelson-Oppen, sono state 
 \begin{itemize}
 	\item {\bf Compressione dei cammini:} l'algoritmo di Nelson-Oppen utilizza gli insiemi disgiunti per rappresentare le classi di congruenza che dovranno essere unite. Ogni elemento di un insieme disgiunto ha un campo {\tt find} che lo unisce in catena al rappresentante della classe a cui appartiene.
 La compressione dei cammini è un'euristica che collega direttamente ogni nodo con il rappresentante della classe.
-Per fare ciò, ogniqualvolta viene chiamato il metodo {\tt find(id)}, ricorsivamente si sale nella catena e quando lo stack sarà ripercorso all'indientro, vengono modificati tutti i campi {\tt find} dei nodi visitati, aggiornandoli con l'id del rappresentante.
+Per fare ciò, ogniqualvolta viene chiamato il metodo {\tt find(id)}, ricorsivamente si sale nella catena e quando lo stack è stato interamente ripercorso all'indientro, vengono modificati tutti i campi {\tt find} dei nodi visitati, aggiornandoli con l'id del rappresentante.
 	\item {\bf Unione per rango:} anche questa euristica migliora la struttura per insiemi disgiunti.
 In particolare definisce un criterio con il quale scegliere il nuovo rappresentante in fase di {\tt union}, criterio non definito nell'algoritmo del testo dove la scelta è arbitraria.
 Con l'unione per rango viene scelto come nuovo rappresentante la radice del sottoalbero con più nodi, a cui unire la radice del sottoalbero con meno nodi. Per semplificare il mantenimento del numero di nodi di ogni sottoalbero è stato introdotto un campo {\tt rank} nell'oggetto {\tt Node} inizialmente a 0.
 Per ogni nodo mantiene un limite superiore all'altezza del nodo stesso, la radice con il rango più piccolo viene fatta puntare alla radice con rango maggiore.
 Così facendo un minor numero di nodi, con lunghe catene di find, saranno visitati prima di raggiungere il nuovo rappresentante. 
 	\item {\bf Letterali vietati:} quest'ultima euristica non riguarda gli insiemi disgiunti ma aiuta a terminare la computazione di una formula non soddisfacile appena si scopre una contraddizione.
-L'idea è quella di controllare se, in fase di {\tt merge} le due classi unite non diano origine ad una contraddizione.
+L'idea è quella di controllare se, in fase di {\tt merge}, le due classi unite non diano origine ad una contraddizione.
 Per fare questo ogni {\tt Node} è stato arricchito con una struttura {\tt HashSet} che mantiene l'insieme dei termini proibiti (da adesso $forbidden$) per quel nodo.
 La lista viene arricchita in fase di parsing: ogniqualvolta si incontra una disuguaglianza
 $F: ... s_{m+1} \not= t_{m+1} ... $, viene arricchito l'insieme $forbidden$ di $s_{m+1}$ aggiungendo $t_{m+1}$ e analogamente ai $forbidden$ di $t_{m+1}$ si aggiunge $s_{m+1}$.
@@ -105,15 +98,15 @@ Restano quindi da fare alcuni semplici controlli prima di consentire una {\tt me
 Il primo controllo verifica che nei $forbidden$ del rappresentante di {\tt id1} non sia presente il nodo {\tt id2}.
 Vista la natura della struttura dati {\tt HashSet} questo controllo viene fatto in tempo atteso $O(1)$.
 Gli altri due controlli verificano in quale classe di congruenza si travano i $forbidden$ di {\tt id1} e di {\tt id2}.
-In particolare, se il rappresentante di un $forbidden$ di {\tt id1} è uguale al rappresentante di {\tt id2} (e viceversa), allora le due classi non devono essere unite e termino restituendo insoddisfacibile.
-Altrimenti si procede con la fase di unione e l'insieme $forbidden$ viene propagata al nuovo rappresentante, mantenendo la struttura aggiornato.
+In particolare, se il rappresentante di un $forbidden$ di {\tt id1} è uguale al rappresentante di {\tt id2} (e viceversa), allora le due classi non devono essere unite e l'algoritmo termina restituendo insoddisfacibile.
+Altrimenti si procede con la fase di unione e l'insieme $forbidden$ viene propagato al nuovo rappresentante, mantenendo la struttura aggiornato.
 \end{itemize}
 Le prime due euristiche sono applicabili al caso generale di formula soddisfacibile o non soddisfacibile migliorando molto l'algoritmo semplice di Nelson-Oppen.
 L'ultima euristica aiuta solo in caso di formula insoddisfacibile, abbattendo il tempo di computazione e portandolo sotto all'implementazione di Downey, Sethi e Tarjan la quale non si presta a questo genere di euristica.
 \subsection{Generatore di formule}
 Al fine di generare benchmark considerevoli, si è implementato un piccolo generatore di formule casuali.
 Questo generatore è accessibile solo dall'interfaccia grafica e consente di generare una qualsiasi formula casuale accettando come paramentri: numero di uguaglianze, disuguaglianze, atomi e non atomi.
-La probabilità di generare formule insoddisfacibili è molto alta ma specificando solo clausole di uguaglianza, o un numero considerevole di formule di uguaglianza rispetto alle disuguaglianze, è possibile generare formule soddisfacibili.
+La probabilità di generare formule insoddisfacibili è molto alta, ma specificando solo clausole di uguaglianza è possibile generare formule soddisfacibili.
 \section{Test}
 Nel seguito sono riportati i risultati dei test effettuati sulle medesime formule con le tre diverse implementazioni: Nelson-Oppen (NO), Nelson-Oppen con euristiche (NO+) e Downey, Sethi e Tarjan (DST) quest'ultimo implementato da Marco Tamassia.
 I test sono stati effettuati su due macchine distinte aventi:
