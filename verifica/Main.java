@@ -41,23 +41,23 @@ public class Main {
   /**
    * Lista di letterali uguali
    * */
-  private static ArrayList<String> equals;
+  private static ArrayList<Node> equals;
   /**
    * Lista di letterali non uguali
    * */
-  private static ArrayList<String> noEquals;
+  private static ArrayList<Node> noEquals;
   /**
    * Lista dei cons da mergiare
    * */
-  private static ArrayList<String> consList;
+  private static ArrayList<Node> consList;
   /**
    * Lista degli atoms da controllare
    * */
-  private static ArrayList<String> atoms;
+  private static ArrayList<Node> atoms;
   /**
    * Lista degli atoms da controllare
    * */
-  private static ArrayList<String> consfn;
+  private static ArrayList<Node> consfn;
   /**
    * Conta il numero di merge fatte.
    */
@@ -128,7 +128,7 @@ public class Main {
 	  System.exit(-1);
 	} catch (Throwable e) {
 	  result = false;
-	  e.printStackTrace();
+	  //e.printStackTrace();
 	}
 	long fine = System.currentTimeMillis();
 	tempo += (fine - inizio);
@@ -201,11 +201,11 @@ public class Main {
   public static boolean execCC(String formula, JResult window)
 	  throws ParseException {
 	Graph = new HashMap<String, Node>();
-	equals = new ArrayList<String>();
-	noEquals = new ArrayList<String>();
-	consList = new ArrayList<String>();
-	atoms = new ArrayList<String>();
-	consfn = new ArrayList<String>();
+	equals = new ArrayList<Node>();
+	noEquals = new ArrayList<Node>();
+	consList = new ArrayList<Node>();
+	atoms = new ArrayList<Node>();
+	consfn = new ArrayList<Node>();
 	merges = 0;
 	new Parser(formula, Graph, equals, noEquals, consList, atoms, consfn);
 	//System.out.println("---");
@@ -216,68 +216,18 @@ public class Main {
 	switch (Config.algorithm) {
 	case 0:
 	  try {
-		return NelsonOppenSpeedUp(formula);
+		return NelsonOppenSpeedUp();
 	  } catch (Exception e) {
 		// Se raccolgo l'eccezione significa che la formula è insoddisfacibile
+		//e.printStackTrace();
 		return false;
 	  }
 	case 1:
-	  return NelsonOppen(formula);
+	  return NelsonOppen();
 	}
-
 	return true;
   }
 
-  /**
-   * Exports a representation of this dag in the form of the
-   * congruence classes formed by merges.
-   * Every class contains its terms in lexicographic order,
-   * and is separated from the next by an empty line.
-   * The classes appear ordered by their first term.
-   *
-   * @return a string containing the congruence classes
-   */
-  public static String exportCC() {
-      Map<String,ArrayList<String>> cc = new HashMap<String, ArrayList<String>>();
-
-      /* separate nodes by congruence class */
-      for( Node n : Graph.values() ) {
-          String representative = findH(n.getId());
-          ArrayList<String> cclass = cc.get(representative);
-          if( cclass == null ) {
-              cclass = new ArrayList<String>();
-              cc.put(representative, cclass);
-          }
-          cclass.add(n.getId());
-      }
-
-      /* sort every class */
-      for( ArrayList<String> cclass : cc.values() ) {
-          Collections.sort(cclass);
-      }
-
-      /* copy classes in an ArrayList... */
-      ArrayList<ArrayList<String>> cclasses = new ArrayList<ArrayList<String>>(cc.values());
-      /* ... and sort them comparing their first term */
-      Collections.sort(cclasses, new Comparator<ArrayList<String>>() {
-          public int compare(ArrayList<String> c1, ArrayList<String> c2) {
-              return c1.get(0).compareTo(c2.get(0));
-          }
-      });
-
-      /* build the final string */
-      StringBuilder s = new StringBuilder();
-
-      for( ArrayList<String> cclass : cclasses ) {
-          for (String term : cclass) {
-              s.append(term);
-              s.append("\n");
-          }
-          s.append("\n");
-      }
-      
-      return s.toString();
-  }
 
   
   /**
@@ -290,7 +240,7 @@ public class Main {
    * @throws ParseException in caso di errori di sintassi nella formula
    * @throws Exception per soddisfare l'ultima euristica in lista
    */
-  private static boolean NelsonOppenSpeedUp(String formula) throws Exception {
+  private static boolean NelsonOppenSpeedUp() throws Exception {
 	boolean result;
 	for (int i = 0; i < consList.size(); i = i + 2) {
 	  mergeH(consList.get(i), consList.get(i + 1));
@@ -309,7 +259,7 @@ public class Main {
    * @return <pre>true</pre> se la formula è valida,<pre>false</pre> altrimenti
    * @throws ParseException in caso di errori di sintassi nella formula
    */
-  private static boolean NelsonOppen(String formula) throws ParseException {
+  private static boolean NelsonOppen() throws ParseException {
 	boolean result;
 	for (int i = 0; i < consList.size(); i = i + 2) {
 	  _merge(consList.get(i), consList.get(i + 1));
@@ -321,17 +271,9 @@ public class Main {
 	return result;
   }
 
-  /**
-   * Metodo per prelevare un nodo dal grafo, uguale per entrambi gli algoritmi.
-   * 
-   * @param id
-   *          del nodo da prelevare
-   * @return Node che identifica il nodo del grafo
-   */
-  private static Node node(String id) {
-	return (Node) Graph.get(id);
-  }
 
+  
+  
   /* METODI DI SUPPORTO CON EURISTICHE */
 
   /**
@@ -340,12 +282,12 @@ public class Main {
    * 
    * @param id del nodo di cui restituire la classe
    */
-  private static String findH(String id) {
-	Node n = node(id);
-	if (!id.equals(n.getFind())) {
-	  n.setFind(findH(n.getFind()));
+  private static Node findH(Node id) {
+
+	if (!id.equals(id.getFind())) {
+	  id.setFind(findH(id.getFind()));
 	}
-	return n.getFind();
+	return id.getFind();
   }
 
   /**
@@ -357,10 +299,10 @@ public class Main {
    * @param id2 secondo nodo da unire
    * @throws Exception nel caso in cui due nodi non possano essere uniti.
    */
-  private static void unionH(String id1, String id2) throws Exception {
+  private static void unionH(Node id1, Node id2) throws Exception {
 	// System.out.println("Inizio node");
-	Node n1 = node(findH(id1));
-	Node n2 = node(findH(id2));
+	Node n1 = findH(id1);
+	Node n2 = findH(id2);
 	if (n1.getRank() > n2.getRank())
 	  link(n1, n2);
 	else {
@@ -376,10 +318,10 @@ public class Main {
 	n2.setFind(n1.getFind());
 	// System.out.println("Faccio forbidden");
 	n1.getCcparent().addAll(n2.getCcparent());
-	n2.setCcparent(new HashSet<String>());
+	n2.setCcparent(new HashSet<Node>());
 
 	n1.getForbidden().addAll(n2.getForbidden());
-	n2.setForbidden(new HashSet<String>());
+	n2.setForbidden(new HashSet<Node>());
 	// System.out.println("Faccio merge");
 
   }
@@ -391,8 +333,8 @@ public class Main {
    *          nodo di cui sapere i padri
    * @return HashSet con l'insieme dei nodi
    */
-  private static HashSet<String> ccparentH(String id) {
-	return (node(findH(id))).getCcparent();
+  private static HashSet<Node> ccparentH(Node id) {
+	return findH(id).getCcparent();
   }
 
   /**
@@ -402,14 +344,11 @@ public class Main {
    * @param id2 nodo da controllare
    * @return <pre>true</pre> se i due nodi sono congruenti,<pre>false</pre> altrimenti
    */
-  private static boolean congruentH(String id1, String id2) {
+  private static boolean congruentH(Node id1, Node id2) {
 
-	Node n1 = node(id1);
-	Node n2 = node(id2);
-
-	if (n1.getFun().equals(n2.getFun())) {
-	  ArrayList<String> arg1 = n1.getArgs();
-	  ArrayList<String> arg2 = n2.getArgs();
+	if (id1.getFun().equals(id2.getFun())) {
+	  ArrayList<Node> arg1 = id1.getArgs();
+	  ArrayList<Node> arg2 = id2.getArgs();
 	  if (arg1.size() == arg2.size()) {
 		for (int i = 0; i < arg1.size(); i++)
 		  if (!findH(arg1.get(i)).equals(findH(arg2.get(i))))
@@ -428,26 +367,23 @@ public class Main {
    * @param id2 nodo da "mergiare"
    * @throws Exception nel caso in cui due nodi non possano essere uniti.
    */
-  private static void mergeH(String id1, String id2) throws Exception {
-	String find1 = findH(id1);
-	String find2 = findH(id2);
+  private static void mergeH(Node id1, Node id2) throws Exception {
+	Node find1 = findH(id1);
+	Node find2 = findH(id2);
 	
 	if (!findH(id1).equals(findH(id2))) {
-
-	  
-	  
-	  if (node(findH(id1)).getForbidden().contains(id2))
+	  if (findH(id1).getForbidden().contains(id2))
 		throw new Exception("Insod");
 	  
 	  /* Euristica dei forbidden */
-	  for (String forb : node(find1).getForbidden()) {
+	  for (Node forb : find1.getForbidden()) {
 		if (findH(forb).equals(find2)) {
 		  //System.out.println("euristica 1: ["+find1+"]"+forb+" - "+find2);
 		  throw new Exception("Non soddisfacibile");
 		}
 	  }
 	  
-	  for (String forb : node(find2).getForbidden()) {
+	  for (Node forb : find2.getForbidden()) {
 		if (findH(forb).equals(find1)) {
 		  //System.out.println("euristica 2: ["+find2+"]"+forb+" - "+find1);
 		  throw new Exception("Non soddisfacibile");
@@ -464,9 +400,9 @@ public class Main {
 	  unionH(id1, id2); /* Faccio la UNION */
 
 	  for (int i = 0; i < AP1.length; i++) {
-		String p1 = (String) AP1[i];
+		Node p1 = (Node)AP1[i];
 		for (int j = 0; j < AP2.length; j++) {
-		  String p2 = (String) AP2[j];
+		  Node p2 = (Node) AP2[j];
 		  if (!findH(p1).equals(findH(p2)) && congruentH(p1, p2))
 			mergeH(p1, p2);
 		}
@@ -504,7 +440,7 @@ public class Main {
 	}
 	return true;
   }
-
+  
   /* METODI SENZA EURISTICHE */
   /**
    * Metodo che restituisce il rappresentante della classe a cui appartiene il
@@ -512,9 +448,8 @@ public class Main {
    * 
    * @param id del nodo di cui restituire la classe
    */
-  private static String _find(String id) {
-	Node n = node(id);
-	return (n.getFind().equals(id)) ? id : _find(n.getFind());
+  private static Node _find(Node id) {
+	return (id.getFind().equals(id)) ? id : _find(id.getFind());
   }
 
   /**
@@ -523,33 +458,33 @@ public class Main {
    * @param id1 primo nodo da unire
    * @param id2 secondo nodo da unire
    */
-  private static void _union(String id1, String id2) {
+  private static void _union(Node id1, Node id2) {
 
-	Node n1 = node(_find(id1));
-	Node n2 = node(_find(id2));
+	Node n1 = _find(id1);
+	Node n2 = _find(id2);
 	// System.out.println("UNION: \t\t" + n1 + " -- " + n2);
 	n1.setFind(n2.getFind());
 	n2.getCcparent().addAll(n1.getCcparent());
-	n1.setCcparent(new HashSet<String>());
+	n1.setCcparent(new HashSet<Node>());
   }
 
   /**
    * @see Main#ccparent
    */
-  private static HashSet<String> _ccparent(String id) {
-	return (node(_find(id))).getCcparent();
+  private static HashSet<Node> _ccparent(Node id) {
+	return _find(id).getCcparent();
   }
 
   /**
    * @see Main#congruent
    */
-  private static boolean _congruent(String id1, String id2) {
-	Node n1 = node(id1);
-	Node n2 = node(id2);
+  private static boolean _congruent(Node id1, Node id2) {
+	Node n1 = id1;
+	Node n2 = id2;
 
 	if (n1.getFun().equals(n2.getFun())) {
-	  ArrayList<String> arg1 = n1.getArgs();
-	  ArrayList<String> arg2 = n2.getArgs();
+	  ArrayList<Node> arg1 = n1.getArgs();
+	  ArrayList<Node> arg2 = n2.getArgs();
 	  if (arg1.size() == arg2.size()) {
 		for (int i = 0; i < arg1.size(); i++)
 		  if (!_find(arg1.get(i)).equals(_find(arg2.get(i))))
@@ -567,24 +502,24 @@ public class Main {
    * @param id1 nodo da "mergiare"
    * @param id2 nodo da "mergiare"
    */
-  private static void _merge(String id1, String id2) {
+  private static void _merge(Node id1, Node id2) {
 
 	if (!_find(id1).equals(_find(id2))) {
-	  HashSet<String> P1 = _ccparent(id1);
-	  HashSet<String> P2 = _ccparent(id2);
+	  HashSet<Node> P1 = _ccparent(id1);
+	  HashSet<Node> P2 = _ccparent(id2);
 
 	  /* conto il numero di merge fatte */
 	  merges++;
-	  
+
 	  Object[] AP1 = P1.toArray();
 	  Object[] AP2 = P2.toArray();
 
 	  _union(id1, id2); /* Faccio la UNION */
 
 	  for (int i = 0; i < AP1.length; i++) {
-		String p1 = (String) AP1[i];
+		Node p1 = (Node) AP1[i];
 		for (int j = 0; j < AP2.length; j++) {
-		  String p2 = (String) AP2[j];
+		  Node p2 = (Node) AP2[j];
 		  if (!(_find(p1).equals(_find(p2))) && _congruent(p1, p2))
 			_merge(p1, p2);
 		}
@@ -616,4 +551,5 @@ public class Main {
 	}
 	return true;
   }
+  
 }

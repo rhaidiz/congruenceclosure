@@ -102,8 +102,7 @@ public class JMainFrame extends JFrame {
 	  @Override
 	  public void actionPerformed(ActionEvent arg0) {
 		/* Lancia la finestra di esecuzione dell'algoritmo */
-		if (jresult == null)
-		  jresult = new JResult();
+		jresult = new JResult();
 		jresult.setFormula(text_formula.getText());
 		jresult.setVisible(true);
 

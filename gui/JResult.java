@@ -22,6 +22,8 @@ public class JResult extends JFrame implements WindowListener {
 
   private JResult jr;
   
+  private Container container;
+  
   private static final long serialVersionUID = 1L;
 
   /**
@@ -40,7 +42,7 @@ public class JResult extends JFrame implements WindowListener {
 	setLocationRelativeTo(null);
 	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	setResizable(false);
-	Container container = getContentPane();
+	container = getContentPane();
 	container.setLayout(new GroupLayout(container));
 	initComponents(container);
 	addWindowListener(this);
@@ -48,11 +50,11 @@ public class JResult extends JFrame implements WindowListener {
   }
 
   public void windowOpened(WindowEvent e) {
-//	new Thread(new Runnable() {
-//	  public void run() {
-//		runAlgorithm(f);
-//	  }
-//	}).start();
+	new Thread(new Runnable() {
+	  public void run() {
+		runAlgorithm(f);
+	  }
+	}).start();
   }
 
   private void initComponents(Container c) {
@@ -82,6 +84,7 @@ public class JResult extends JFrame implements WindowListener {
    * Esegue l'algoritmo e misura il tempo
    */
   private void runAlgorithm(String formula) {
+	initComponents(container);
 	long tempo = 0;
 	long inizio = System.currentTimeMillis();
 	try {
@@ -126,19 +129,18 @@ public class JResult extends JFrame implements WindowListener {
   @Override
   public void windowActivated(WindowEvent arg0) {
 	// TODO Auto-generated method stub
-	setTitle("Running...");
-	new Thread(new Runnable() {
-	  public void run() {
-		runAlgorithm(f);
-	  }
-	}).start();
+//	setTitle("Running...");
+//	new Thread(new Runnable() {
+//	  public void run() {
+//		runAlgorithm(f);
+//	  }
+//	}).start();
 	//f = formula;
   }
 
   @Override
   public void windowClosed(WindowEvent arg0) {
 	// TODO Auto-generated method stub
-
   }
 
   @Override
